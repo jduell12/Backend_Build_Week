@@ -12,7 +12,7 @@ function getStudents() {
 }
 
 async function addStudent(student) {
-  return null;
+  return db("students").insert(student);
 }
 
 async function editStudent(id, student) {

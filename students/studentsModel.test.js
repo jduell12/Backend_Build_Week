@@ -1,6 +1,5 @@
 const db = require("../data/dbConfig");
 const Students = require("./studentsModel");
-const { intersect } = require("../data/dbConfig");
 
 describe("studentsModel", () => {
   //wipes all tables in database clean so each test starts with empty tables
@@ -35,8 +34,23 @@ describe("studentsModel", () => {
   });
 
   describe("addStudent(student)", () => {
-    it.todo("");
-    it.todo("");
+    it("adds a student to an empty database and returns the number of students", async () => {
+      const student = { name: "Wolf" };
+
+      const count = await Students.addStudent(student);
+      expect(count).not.toBeNull();
+      expect(count[0]).toBe(1);
+    });
+
+    it("adds a student to a non-empty database and returns the number of students", async () => {
+      await db("students").insert({ name: "wolf" });
+      await db("students").insert({ name: "kelly" });
+      await db("students").insert({ name: "dragon" });
+
+      const count = await Students.addStudent({ name: "Penguin" });
+      expect(count).not.toBeNull();
+      expect(count[0]).toBe(4);
+    });
   });
 
   describe("editStudent(id, student)", () => {
