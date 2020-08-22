@@ -41,14 +41,17 @@ async function getUserById(userId) {
   return db("users").where({ id: userId }).first();
 }
 
-//gets user by something other than id
+//gets user by username
 async function getUserByUsername(name) {
   return db("users").where({ username: name }).first();
 }
 
 //gets a list of students for a given user
 async function getStudents(userId) {
-  return null;
+  return db("students as s")
+    .join("users as u", "s.class_id", "u.class_id")
+    .select("s.name")
+    .orderBy("s.id");
 }
 
 //gets a list of classes for a given user

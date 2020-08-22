@@ -5,6 +5,8 @@ describe("usersModel", () => {
   //wipes all tables in database clean so each test starts with empty tables
   beforeEach(async () => {
     await db("users").truncate();
+    await db("classes").truncate();
+    await db("students").truncate();
   });
 
   describe("getUsers()", () => {
@@ -124,8 +126,45 @@ describe("usersModel", () => {
   });
 
   describe("getStudents(id)", () => {
-    it.todo("");
-    it.todo("");
+    it("gets a list of students that the user is mentoring", async () => {
+      const students = [
+        { name: "Neo", class_id: 1 },
+        { name: "Trinity", class_id: 1 },
+        { name: "Smith", class_id: 1 },
+      ];
+
+      await db("classes").insert({ name: "Computer Science" });
+      await db("users").insert({
+        username: "morpheous",
+        password: "blue",
+        class_id: 1,
+      });
+      students.forEach(async (student) => {
+        await db("students").insert(student);
+      });
+
+      const expectedStudents = [
+        { name: "Neo" },
+        { name: "Trinity" },
+        { name: "Smith" },
+      ];
+
+      const studentList = await Users.getStudents(1);
+      expect(studentList).not.toBeNull();
+      expect(studentList).toEqual(expect.arrayContaining(expectedStudents));
+    });
+    it("returns empty array when user has no students they are mentoring", async () => {
+      await db("classes").insert({ name: "Computer Science" });
+      await db("users").insert({
+        username: "morpheous",
+        password: "blue",
+        class_id: 1,
+      });
+
+      const studentList = await Users.getStudents(1);
+      expect(studentList).toHaveLength(0);
+      expect(studentList).toEqual(expect.arrayContaining([]));
+    });
   });
 
   describe("getClasses(id)", () => {
