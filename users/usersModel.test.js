@@ -54,6 +54,59 @@ describe("usersModel", () => {
         password: "pass",
       });
     });
+
+    it("returns 0 when edit fails due to wrong id", async () => {
+      const count = await Users.editUser(1, { username: "wolf" });
+
+      expect(count).toBe(0);
+    });
+  });
+
+  describe("deleteUser(id)", () => {
+    it("returns 1 when successfully deletes user from db", async () => {
+      await db("users").insert({ username: "wolf", password: "pass" });
+      const count = await Users.deleteUser(1);
+      expect(count).toBe(1);
+    });
+    it("returns 0 when no user with the id is in the db", async () => {
+      const count = await Users.deleteUser(1);
+      expect(count).toBe(0);
+    });
+  });
+
+  describe("getUserById(id)", () => {
+    it("returns user information correctly", async () => {
+      await db("users").insert({ username: "wolf", password: "pass" });
+
+      const user = await Users.getUserById(1);
+
+      expect(user).not.toBeNull();
+      expect(user).toEqual({
+        class_id: null,
+        id: 1,
+        username: "wolf",
+        password: "pass",
+      });
+    });
+
+    it("returns undefined when no user with that id is in the db", async () => {
+      const user = await Users.getUserById(1);
+      expect(user).toBeUndefined();
+    });
+  });
+
+  describe("getUserBy(filter)", () => {
+    it.todo("");
+    it.todo("");
+  });
+
+  describe("getStudents(id)", () => {
+    it.todo("");
+    it.todo("");
+  });
+
+  describe("getClasses(id)", () => {
+    it.todo("");
     it.todo("");
   });
 });

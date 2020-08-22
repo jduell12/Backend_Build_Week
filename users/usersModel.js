@@ -33,12 +33,12 @@ async function editUser(userId, user) {
 
 //deletes user with given id
 async function deleteUser(userId) {
-  return null;
+  return db("users").where({ id: userId }).del();
 }
 
 //gets a user by a given id
 async function getUserById(userId) {
-  return null;
+  return db("users").where({ id: userId }).first();
 }
 
 //gets user by something other than id
