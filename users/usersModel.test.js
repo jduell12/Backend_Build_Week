@@ -95,9 +95,32 @@ describe("usersModel", () => {
     });
   });
 
-  describe("getUserBy(filter)", () => {
-    it.todo("");
-    it.todo("");
+  describe("getUserByUsername(filter)", () => {
+    it("gets user by username", async () => {
+      const user1 = {
+        username: "wolf",
+        password: "kelly",
+      };
+
+      const expected = {
+        username: "wolf",
+        password: "kelly",
+        id: 1,
+        class_id: null,
+      };
+
+      await db("users").insert(user1);
+      const user = await Users.getUserByUsername("wolf");
+
+      expect(user).not.toBeNull();
+      expect(user).toEqual(expected);
+    });
+
+    it("returns undefined when the username is not in the db", async () => {
+      const user = await Users.getUserByUsername("wolf");
+
+      expect(user).toBeUndefined();
+    });
   });
 
   describe("getStudents(id)", () => {

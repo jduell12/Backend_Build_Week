@@ -6,7 +6,7 @@ module.exports = {
   editUser,
   deleteUser,
   getUserById,
-  getUserBy,
+  getUserByUsername,
   getStudents,
   getClasses,
 };
@@ -42,8 +42,8 @@ async function getUserById(userId) {
 }
 
 //gets user by something other than id
-async function getUserBy(filter) {
-  return null;
+async function getUserByUsername(name) {
+  return db("users").where({ username: name }).first();
 }
 
 //gets a list of students for a given user
