@@ -56,5 +56,9 @@ async function getStudents(userId) {
 
 //gets a list of classes for a given user
 async function getClasses(userId) {
-  return null;
+  return db("classes as c")
+    .join("users_classes as uc", "uc.class_id", "c.id")
+    .join("users as u", "uc.user_id", "u.id")
+    .select("c.name")
+    .orderBy("c.id");
 }

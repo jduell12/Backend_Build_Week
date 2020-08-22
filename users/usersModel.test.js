@@ -126,7 +126,7 @@ describe("usersModel", () => {
   });
 
   describe("getStudents(id)", () => {
-    it("gets a list of students that the user is mentoring", async () => {
+    it("gets an array of students that the user is mentoring", async () => {
       const students = [
         { name: "Neo", class_id: 1 },
         { name: "Trinity", class_id: 1 },
@@ -153,6 +153,7 @@ describe("usersModel", () => {
       expect(studentList).not.toBeNull();
       expect(studentList).toEqual(expect.arrayContaining(expectedStudents));
     });
+
     it("returns empty array when user has no students they are mentoring", async () => {
       await db("classes").insert({ name: "Computer Science" });
       await db("users").insert({
@@ -168,7 +169,42 @@ describe("usersModel", () => {
   });
 
   describe("getClasses(id)", () => {
-    it.todo("");
-    it.todo("");
+    it("returns an array of classes the user is involved in", async () => {
+      await db("classes").insert({ name: "Computer Science" });
+      await db("classes").insert({ name: "Theology" });
+      await db("classes").insert({ name: "Psychology" });
+
+      await db("users").insert({
+        username: "morpheous",
+        password: "blue",
+        class_id: 1,
+      });
+
+      await db("users_classes").insert({ class_id: 1, user_id: 1 });
+      await db("users_classes").insert({ class_id: 2, user_id: 1 });
+      await db("users_classes").insert({ class_id: 3, user_id: 1 });
+
+      const expectedClasses = [
+        { name: "Computer Science" },
+        { name: "Theology" },
+        { name: "Psychology" },
+      ];
+
+      const classes = await Users.getClasses(1);
+      expect(classes).not.toBeNull();
+      expect(classes).toHaveLength(3);
+      expect(classes).toEqual(expect.arrayContaining(expectedClasses));
+    });
+
+    it("returns an empty array when user has no classes they are involved in", async () => {
+      await db("users").insert({
+        username: "morpheous",
+        password: "blue",
+      });
+
+      const classes = await Users.getClasses(1);
+      expect(classes).not.toBeNull();
+      expect(classes).toHaveLength(0);
+    });
   });
 });
