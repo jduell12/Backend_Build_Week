@@ -4,7 +4,7 @@ exports.up = function (knex) {
       tbl.increments("id");
       tbl.string("name", 256).notNullable();
       tbl.text("description");
-      tbl.string("data").notNullable();
+      tbl.string("due_date").notNullable();
       tbl.boolean("completed").defaultTo(0);
     })
     .createTable("classes", (tbl) => {
@@ -17,13 +17,13 @@ exports.up = function (knex) {
       tbl.string("name", 256).notNullable().unique();
       tbl
         .integer("task_id")
-        .usigned()
+        .unsigned()
         .references("tasks.id")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
       tbl
         .integer("class_id")
-        .usigned()
+        .unsigned()
         .references("classes.id")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
@@ -34,7 +34,7 @@ exports.up = function (knex) {
       tbl.string("password", 256).notNullable();
       tbl
         .integer("class_id")
-        .usigned()
+        .unsigned()
         .references("classes.id")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
@@ -43,13 +43,13 @@ exports.up = function (knex) {
       tbl.increments("id");
       tbl
         .integer("user_id")
-        .usigned()
+        .unsigned()
         .references("users.id")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
       tbl
         .integer("student_id")
-        .usigned()
+        .unsigned()
         .references("students.id")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
