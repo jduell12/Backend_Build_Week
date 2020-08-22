@@ -54,12 +54,24 @@ describe("studentsModel", () => {
   });
 
   describe("editStudent(id, student)", () => {
-    it.todo("");
-    it.todo("");
+    it("edits a student in the database and returns 1", async () => {
+      await db("students").insert({ name: "wolf" });
+
+      const count = await Students.editStudent(1, { name: "awolf" });
+      expect(count).not.toBeNull();
+      expect(count).toBe(1);
+    });
+
+    it("returns 0 when edit fails due to wrong id", async () => {
+      const count = await Students.editStudent(1, { name: "awolf" });
+      expect(count).not.toBeNull();
+      expect(count).toBe(0);
+    });
   });
 
   describe("deleteStudent(id, student)", () => {
     it.todo("");
+
     it.todo("");
   });
 });

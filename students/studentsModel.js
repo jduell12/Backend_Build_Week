@@ -15,10 +15,15 @@ async function addStudent(student) {
   return db("students").insert(student);
 }
 
-async function editStudent(id, student) {
-  return null;
+async function editStudent(studentId, student) {
+  return db("students")
+    .where({ id: studentId })
+    .update(student)
+    .then((count) => {
+      return count;
+    });
 }
 
-async function deleteStudent(id, student) {
+async function deleteStudent(studentId, student) {
   return null;
 }
