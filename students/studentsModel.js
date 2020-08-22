@@ -8,7 +8,7 @@ module.exports = {
 };
 
 function getStudents() {
-  return null;
+  return db("students");
 }
 
 async function addStudent(student) {
