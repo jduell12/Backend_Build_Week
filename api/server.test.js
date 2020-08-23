@@ -128,7 +128,7 @@ describe("server", () => {
         expect(secondRes.status).toBe(200);
       });
 
-      it.only("returns empty array when getting empty class list of user", async () => {
+      it("returns empty array when getting empty class list of user", async () => {
         const firstRes = await supertest(server)
           .post("/auth/register")
           .send({ username: "sam", password: "pass" });
@@ -140,6 +140,49 @@ describe("server", () => {
         });
 
         expect(secondRes.body.data).toEqual([]);
+      });
+
+      it("returns 200 OK when getting class list of user from non-empty database", async () => {
+        await db("classes").insert({ name: "CS" });
+        await db("classes").insert({ name: "Psy" });
+
+        const firstRes = await supertest(server)
+          .post("/auth/register")
+          .send({ username: "sam", password: "pass", class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/classes").set({
+          authorization: token,
+        });
+
+        expect(secondRes.status).toBe(200);
+      });
+
+      it("returns class list of user from non-empty database", async () => {
+        await db("classes").insert({ name: "CS" });
+        await db("classes").insert({ name: "Psy" });
+
+        const exp = [{ name: "CS" }];
+
+        const firstRes = await supertest(server)
+          .post("/auth/register")
+          .send({ username: "sam", password: "pass", class_id: 1 });
+
+        const dbClasses = await db("classes as c")
+          .join("users_classes as uc", "uc.class_id", "c.id")
+          .join("users as u", "uc.user_id", "u.id")
+          .select("c.name")
+          .orderBy("c.id");
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/classes").set({
+          authorization: token,
+        });
+
+        expect(secondRes.body.data).toEqual(exp);
+        expect(secondRes.body.data).toEqual(dbClasses);
       });
     });
 
