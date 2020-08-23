@@ -13,7 +13,7 @@ function getTasks() {
 }
 
 async function addTask(task) {
-  return null;
+  return db("tasks").insert(task);
 }
 
 async function editTask(taskId, task) {

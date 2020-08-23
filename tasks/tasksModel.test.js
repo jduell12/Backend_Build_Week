@@ -53,9 +53,57 @@ describe("tasksModel", () => {
   });
 
   describe("addTask", () => {
-    it.todo("");
+    it("adds a task to an empty database and returns the number of tasks", async () => {
+      const count = await Tasks.addTask({
+        name: "to do",
+        due_date: "Sep 1, 2020",
+      });
 
-    it.todo("");
+      const dbCount = await db("tasks");
+
+      expect(count).not.toBeNull();
+      expect(count[0]).toEqual(dbCount.length);
+    });
+
+    it("adds a task to a non-empty database and returns the number of tasks", async () => {
+      await db("tasks").insert({ name: "to do", due_date: "Sep 1, 2020" });
+      await db("tasks").insert({ name: "to do2", due_date: "Sep 1, 2020" });
+
+      const expected = [
+        {
+          id: 1,
+          name: "to do",
+          due_date: "Sep 1, 2020",
+          completed: 0,
+          description: null,
+        },
+        {
+          id: 2,
+          name: "to do2",
+          due_date: "Sep 1, 2020",
+          completed: 0,
+          description: null,
+        },
+        {
+          id: 3,
+          name: "to do3",
+          due_date: "Sep 1, 2020",
+          completed: 0,
+          description: null,
+        },
+      ];
+
+      const count = await Tasks.addTask({
+        name: "to do3",
+        due_date: "Sep 1, 2020",
+      });
+      const dbTasks = await db("tasks");
+
+      expect(count).not.toBeNull();
+      expect(count[0]).toBe(3);
+      expect(count[0]).toBe(dbTasks.length);
+      expect(dbTasks).toEqual(expect.arrayContaining(expected));
+    });
   });
 
   describe("editTask", () => {
