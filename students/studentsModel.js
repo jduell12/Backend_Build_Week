@@ -35,5 +35,9 @@ async function deleteStudent(studentId) {
 
 //returns an array of tasks the student is assigned
 async function getTasks(studentId) {
-  return null;
+  return db("tasks as t")
+    .join("student_tasks as st", "st.task_id", "t.id")
+    .join("students as s", "s.id", "st.student_id")
+    .select("t.name", "t.description", "t.due_date", "t.completed")
+    .orderBy("t.id");
 }

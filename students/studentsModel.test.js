@@ -100,4 +100,44 @@ describe("studentsModel", () => {
       expect(find).toBeUndefined();
     });
   });
+
+  describe("getTasks(id)", () => {
+    it("returns a list of tasks for a given student", async () => {
+      await db("students").insert({ name: "Wolf" });
+
+      await db("tasks").insert({ name: "to do", due_date: "Sep 1, 2020" });
+      await db("tasks").insert({ name: "to do2", due_date: "Sep 1, 2020" });
+      await db("tasks").insert({ name: "to do3", due_date: "Sep 1, 2020" });
+
+      await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+      await db("student_tasks").insert({ student_id: 1, task_id: 3 });
+
+      const exp = [
+        {
+          name: "to do",
+          due_date: "Sep 1, 2020",
+          completed: 0,
+          description: null,
+        },
+        {
+          name: "to do3",
+          due_date: "Sep 1, 2020",
+          completed: 0,
+          description: null,
+        },
+      ];
+
+      const tasks = await Students.getTasks();
+      const dbTasks = await db("tasks as t")
+        .join("student_tasks as st", "st.task_id", "t.id")
+        .join("students as s", "s.id", "st.student_id")
+        .select("t.name", "t.description", "t.due_date", "t.completed")
+        .orderBy("t.id");
+
+      expect(tasks).not.toBeNull();
+      expect(tasks).toEqual(expect.arrayContaining(exp));
+      expect(dbTasks).toEqual(expect.arrayContaining(tasks));
+      expect(tasks.length).toBe(dbTasks.length);
+    });
+  });
 });
