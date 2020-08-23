@@ -69,9 +69,19 @@ describe("studentsModel", () => {
     });
   });
 
-  describe("deleteStudent(id, student)", () => {
-    it.todo("");
+  describe("deleteStudent(id)", () => {
+    it("returns 1 when successfully deletes a student from the db", async () => {
+      await db("students").insert({ name: "wolf" });
 
-    it.todo("");
+      const count = await Students.deleteStudent(1);
+      expect(count).not.toBeNull();
+      expect(count).toBe(1);
+    });
+
+    it("returns 0 when no student with the id is in the db", async () => {
+      const count = await Students.deleteStudent(1);
+      expect(count).not.toBeNull();
+      expect(count).toBe(0);
+    });
   });
 });

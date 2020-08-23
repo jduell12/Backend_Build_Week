@@ -24,6 +24,6 @@ async function editStudent(studentId, student) {
     });
 }
 
-async function deleteStudent(studentId, student) {
-  return null;
+async function deleteStudent(studentId) {
+  return db("students").where({ id: studentId }).del();
 }
