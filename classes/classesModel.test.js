@@ -5,6 +5,7 @@ describe("classesModel", () => {
   //wipes classes table in database clean so each test starts with empty tables
   beforeEach(async () => {
     await db("classes").truncate();
+    await db("students").truncate();
   });
 
   describe("getClasses()", () => {
@@ -101,6 +102,39 @@ describe("classesModel", () => {
 
       expect(count).not.toBeNull();
       expect(count).toBe(0);
+    });
+  });
+
+  describe("getStudents(classId)", () => {
+    it("gets an array of students taking the specified class", async () => {
+      await db("classes").insert({ name: "CS" });
+      await db("classes").insert({ name: "Psy" });
+      await db("classes").insert({ name: "Math" });
+      await db("classes").insert({ name: "Psychology" });
+
+      await db("students").insert({ name: "Wolf" });
+      await db("students").insert({ name: "Kelly" });
+
+      await db("student_classes").insert({ class_id: 1, student_id: 1 });
+      await db("student_classes").insert({ class_id: 1, student_id: 2 });
+
+      const exp = [
+        { class: "CS", name: "Wolf" },
+        { class: "CS", name: "Kelly" },
+      ];
+
+      const studentClassList = await Classes.getStudents(1);
+      const dbStudentInClass = await db("students as s")
+        .join("student_classes as sc", "sc.student_id", "s.id")
+        .join("classes as c", "sc.class_id", "c.id")
+        .select("s.name", "c.name as class")
+        .orderBy("s.id");
+
+      expect(studentClassList).not.toBeNull();
+      expect(studentClassList.length).toBe(2);
+      expect(dbStudentInClass).toEqual(
+        expect.arrayContaining(studentClassList),
+      );
     });
   });
 });
