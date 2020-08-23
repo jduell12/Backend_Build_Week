@@ -18,11 +18,23 @@ function getUsers() {
 
 //adds a user to the database and returns the user's username
 async function addUser(user) {
-  return db("users")
-    .insert(user)
-    .then((id) => {
-      return db("users").where({ id }).select("users.username").first();
-    });
+  if (user.class_id) {
+    return db("users")
+      .insert(user)
+      .then(async (id) => {
+        await db("users_classes").insert({
+          user_id: id,
+          class_id: user.class_id,
+        });
+        return db("users").where({ id }).select("users.username").first();
+      });
+  } else {
+    return db("users")
+      .insert(user)
+      .then((id) => {
+        return db("users").where({ id }).select("users.username").first();
+      });
+  }
 }
 
 //updates user with given id
