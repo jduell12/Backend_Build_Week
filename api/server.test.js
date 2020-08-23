@@ -679,8 +679,120 @@ describe("server", () => {
     });
 
     //add a new class to user's class list
-    describe("POST /user/classes", () => {
-      it.todo("");
+    describe("POST /users/classes", () => {
+      it("adds a new class to the user's class list", async () => {
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/classes")
+          .send({
+            name: "Security",
+            description: "Learning to safeguard ",
+          })
+          .set({ authorization: token });
+
+        const thirdRes = await supertest(server)
+          .post("/users/classes")
+          .send({
+            name: "Adventure",
+            description: "Learning to safeguard ",
+          })
+          .set({ authorization: token });
+
+        const exp = [{ name: "Security" }, { name: "Adventure" }];
+
+        const dbUserList = await db("classes as c")
+          .join("users_classes as uc", "uc.class_id", "c.id")
+          .join("users as u", "uc.user_id", "u.id")
+          .select("c.name")
+          .orderBy("c.id");
+
+        expect(dbUserList).toHaveLength(2);
+        expect(dbUserList).toEqual(expect.arrayContaining(exp));
+      });
+
+      it("receives 201 OK when adding a new class to the user's class list", async () => {
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/classes")
+          .send({
+            name: "Security",
+            description: "Learning to safeguard ",
+          })
+          .set({ authorization: token });
+
+        const dbUserList = await db("classes as c")
+          .join("users_classes as uc", "uc.class_id", "c.id")
+          .join("users as u", "uc.user_id", "u.id")
+          .select("c.name")
+          .orderBy("c.id");
+
+        expect(dbUserList).toHaveLength(1);
+        expect(secondRes.status).toBe(201);
+      });
+
+      it("receives 406 Not Acceptable when adding a new class to the user's class list without the required elements", async () => {
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/classes")
+          .send({
+            description: "Learning to safeguard ",
+          })
+          .set({ authorization: token });
+
+        const dbUserList = await db("classes as c")
+          .join("users_classes as uc", "uc.class_id", "c.id")
+          .join("users as u", "uc.user_id", "u.id")
+          .select("c.name")
+          .orderBy("c.id");
+
+        expect(dbUserList).toHaveLength(0);
+        expect(secondRes.status).toBe(406);
+      });
+
+      it("receives 'Please enter all required fields to add the class.' in res.body when adding a new class to the user's class list without the required elements", async () => {
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/classes")
+          .send({
+            description: "Learning to safeguard ",
+          })
+          .set({ authorization: token });
+
+        const dbUserList = await db("classes as c")
+          .join("users_classes as uc", "uc.class_id", "c.id")
+          .join("users as u", "uc.user_id", "u.id")
+          .select("c.name")
+          .orderBy("c.id");
+
+        expect(dbUserList).toHaveLength(0);
+        expect(secondRes.body.message).toBe(
+          "Please enter all required fields to add the class.",
+        );
+      });
     });
 
     //add student to current user's student list
