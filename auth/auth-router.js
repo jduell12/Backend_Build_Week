@@ -34,4 +34,25 @@ router.post("/register", (req, res) => {
   }
 });
 
+router.post("/login", (req, res) => {
+  if (loginValid(req.body)) {
+    const { username, password } = req.body;
+
+    Users.getUserByUsername(username)
+      .then((user) => {
+        if (user && bcryptjs.compareSync(password, user.password)) {
+          const token = signToken(user);
+          res.status(200).json({ message: "Welcome", token });
+        } else {
+          res.status(401).json({ message: "Invalid credentials" });
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err.message });
+      });
+  } else {
+    res.status(400).json({ message: "Please provide a username and password" });
+  }
+});
+
 module.exports = router;
