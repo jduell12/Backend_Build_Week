@@ -16,7 +16,12 @@ async function addClass(classInfo) {
 }
 
 async function editClass(classId, classInfo) {
-  return null;
+  return db("classes")
+    .where({ id: classId })
+    .update(classInfo)
+    .then((count) => {
+      return count;
+    });
 }
 
 async function deleteClass(classId) {

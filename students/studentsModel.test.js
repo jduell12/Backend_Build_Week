@@ -57,9 +57,19 @@ describe("studentsModel", () => {
     it("edits a student in the database and returns 1", async () => {
       await db("students").insert({ name: "wolf" });
 
+      const expected = {
+        id: 1,
+        name: "awolf",
+        task_id: null,
+        class_id: null,
+      };
+
       const count = await Students.editStudent(1, { name: "awolf" });
+      const updatedStudent = await db("students").where({ id: 1 }).first();
+
       expect(count).not.toBeNull();
       expect(count).toBe(1);
+      expect(updatedStudent).toEqual(expected);
     });
 
     it("returns 0 when edit fails due to wrong id", async () => {
@@ -74,14 +84,20 @@ describe("studentsModel", () => {
       await db("students").insert({ name: "wolf" });
 
       const count = await Students.deleteStudent(1);
+      const find = await db("students").where({ id: 1 }).first();
+
       expect(count).not.toBeNull();
       expect(count).toBe(1);
+      expect(find).toBeUndefined();
     });
 
     it("returns 0 when no student with the id is in the db", async () => {
       const count = await Students.deleteStudent(1);
+      const find = await db("students").where({ id: 1 }).first();
+
       expect(count).not.toBeNull();
       expect(count).toBe(0);
+      expect(find).toBeUndefined();
     });
   });
 });

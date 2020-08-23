@@ -52,9 +52,27 @@ describe("classesModel", () => {
   });
 
   describe("editClass(classId, classInfo)", () => {
-    it.todo("");
+    it("edits a class in the database and returns 1", async () => {
+      await db("classes").insert({ name: "CS" });
+      await db("classes").insert({ name: "Psy" });
+      await db("classes").insert({ name: "Math" });
+      await db("classes").insert({ name: "Psychology" });
 
-    it.todo("");
+      const expected = { id: 1, name: "Computer Science", description: null };
+
+      const count = await Classes.editClass(1, { name: "Computer Science" });
+      const updated = await db("classes").where({ id: 1 }).first();
+
+      expect(count).not.toBeNull();
+      expect(count).toBe(1);
+      expect(updated).toEqual(expected);
+    });
+
+    it("returns 0 when edit fails due to wrong id", async () => {
+      const count = await Classes.editClass(1, { name: "Computer Science" });
+      expect(count).not.toBeNull();
+      expect(count).toBe(0);
+    });
   });
 
   describe("deleteClass(classId)", () => {
