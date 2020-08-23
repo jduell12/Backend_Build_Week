@@ -25,5 +25,5 @@ async function editClass(classId, classInfo) {
 }
 
 async function deleteClass(classId) {
-  return null;
+  return db("classes").where({ id: classId }).del();
 }

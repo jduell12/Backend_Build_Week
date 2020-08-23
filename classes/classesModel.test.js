@@ -76,8 +76,31 @@ describe("classesModel", () => {
   });
 
   describe("deleteClass(classId)", () => {
-    it.todo("");
+    it("returns 1 when successfully deletes a class from the db", async () => {
+      await db("classes").insert({ name: "CS" });
+      await db("classes").insert({ name: "Psy" });
+      await db("classes").insert({ name: "Math" });
+      await db("classes").insert({ name: "Psychology" });
 
-    it.todo("");
+      const expected = [
+        { id: 2, name: "Psy", description: null },
+        { id: 3, name: "Math", description: null },
+        { id: 4, name: "Psychology", description: null },
+      ];
+
+      const count = await Classes.deleteClass(1);
+      const classes = await db("classes");
+
+      expect(count).not.toBeNull();
+      expect(count).toBe(1);
+      expect(classes).toEqual(expect.arrayContaining(expected));
+    });
+
+    it("returns 0 when no class with the id is in the db", async () => {
+      const count = await Classes.deleteClass(1);
+
+      expect(count).not.toBeNull();
+      expect(count).toBe(0);
+    });
   });
 });
