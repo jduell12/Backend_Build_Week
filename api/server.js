@@ -6,6 +6,7 @@ const authenticate = require("../auth/authenticate-middleware");
 const authRouter = require("../auth/auth-router");
 const usersRouter = require("../users/usersRouter");
 const classesRouter = require("../classes/classesRouter");
+const studentsRouter = require("../students/studentsRouter");
 
 server.use(express.json());
 server.use(cors());
@@ -13,6 +14,7 @@ server.use(cors());
 server.use("/auth", authRouter);
 server.use("/users", authenticate, usersRouter);
 server.use("/classes", authenticate, classesRouter);
+server.use("/students", authenticate, studentsRouter);
 
 server.get("/", (req, res) => {
   res.status(200).json({ server: "working" });

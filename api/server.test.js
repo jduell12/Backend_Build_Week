@@ -242,7 +242,7 @@ describe("server", () => {
         expect(secondRes.status).toBe(200);
       });
 
-      it.only("returns array of students taking a particular class from a non-empty db", async () => {
+      it("returns array of students taking a particular class from a non-empty db", async () => {
         await db("classes").insert({ name: "Security" });
         await db("classes").insert({ name: "CS" });
 
@@ -272,7 +272,172 @@ describe("server", () => {
 
     //task list for particular student
     describe("GET /students/:id/tasks", () => {
-      it.todo("");
+      it("gets 200 OK when geting empty task list for a particular student", async () => {
+        await db("classes").insert({ name: "Security" });
+        await db("classes").insert({ name: "CS" });
+
+        await db("students").insert({ name: "Frodo", class_id: 1 });
+        await db("students").insert({ name: "Pippin", class_id: 2 });
+        await db("students").insert({ name: "Merry", class_id: 1 });
+
+        await db("student_classes").insert({ student_id: 1, class_id: 1 });
+        await db("student_classes").insert({ student_id: 2, class_id: 2 });
+        await db("student_classes").insert({ student_id: 3, class_id: 1 });
+
+        const firstRes = await supertest(server)
+          .post("/auth/register")
+          .send({ username: "sam", password: "pass", class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/students/1/tasks").set({
+          authorization: token,
+        });
+
+        expect(firstRes.status).toBe(201);
+        expect(secondRes.status).toBe(200);
+      });
+
+      it("gets empty array when geting empty task list for a particular student", async () => {
+        await db("classes").insert({ name: "Security" });
+        await db("classes").insert({ name: "CS" });
+
+        await db("students").insert({ name: "Frodo", class_id: 1 });
+        await db("students").insert({ name: "Pippin", class_id: 2 });
+        await db("students").insert({ name: "Merry", class_id: 1 });
+
+        await db("student_classes").insert({ student_id: 1, class_id: 1 });
+        await db("student_classes").insert({ student_id: 2, class_id: 2 });
+        await db("student_classes").insert({ student_id: 3, class_id: 1 });
+
+        const firstRes = await supertest(server)
+          .post("/auth/register")
+          .send({ username: "sam", password: "pass", class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/students/1/tasks").set({
+          authorization: token,
+        });
+
+        expect(secondRes.body.data).toEqual([]);
+      });
+
+      it("gets 200 OK when geting task list for a particular student with a non-empty task list", async () => {
+        await db("classes").insert({
+          name: "Security",
+        });
+        await db("classes").insert({
+          name: "CS",
+        });
+
+        await db("students").insert({
+          name: "Frodo",
+          class_id: 1,
+        });
+        await db("students").insert({
+          name: "Pippin",
+          class_id: 2,
+        });
+        await db("students").insert({
+          name: "Merry",
+          class_id: 1,
+        });
+
+        await db("student_classes").insert({
+          student_id: 1,
+          class_id: 1,
+        });
+        await db("student_classes").insert({
+          student_id: 2,
+          class_id: 2,
+        });
+        await db("student_classes").insert({
+          student_id: 3,
+          class_id: 1,
+        });
+
+        await db("tasks").insert({ name: "get ring", due_date: "1 year" });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+          class_id: 1,
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/students/1/tasks").set({
+          authorization: token,
+        });
+
+        expect(firstRes.status).toBe(201);
+        expect(secondRes.status).toBe(200);
+      });
+
+      it("gets task list for a particular student with a non-empty task list", async () => {
+        await db("classes").insert({
+          name: "Security",
+        });
+        await db("classes").insert({
+          name: "CS",
+        });
+
+        await db("students").insert({
+          name: "Frodo",
+          class_id: 1,
+        });
+        await db("students").insert({
+          name: "Pippin",
+          class_id: 2,
+        });
+        await db("students").insert({
+          name: "Merry",
+          class_id: 1,
+        });
+
+        await db("student_classes").insert({
+          student_id: 1,
+          class_id: 1,
+        });
+        await db("student_classes").insert({
+          student_id: 2,
+          class_id: 2,
+        });
+        await db("student_classes").insert({
+          student_id: 3,
+          class_id: 1,
+        });
+
+        await db("tasks").insert({ name: "get ring", due_date: "1 year" });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const exp = [
+          {
+            name: "get ring",
+            description: null,
+            completed: 0,
+            due_date: "1 year",
+          },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+          class_id: 1,
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/students/1/tasks").set({
+          authorization: token,
+        });
+
+        expect(secondRes.body.data).toEqual(exp);
+      });
     });
   });
 
