@@ -38,6 +38,6 @@ async function getStudents(classId) {
   return db("students as s")
     .join("student_classes as sc", "sc.student_id", "s.id")
     .join("classes as c", "sc.class_id", "c.id")
-    .select("s.name", "c.name as class")
+    .select("s.name")
     .orderBy("s.id");
 }

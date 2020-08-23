@@ -118,16 +118,13 @@ describe("classesModel", () => {
       await db("student_classes").insert({ class_id: 1, student_id: 1 });
       await db("student_classes").insert({ class_id: 1, student_id: 2 });
 
-      const exp = [
-        { class: "CS", name: "Wolf" },
-        { class: "CS", name: "Kelly" },
-      ];
+      const exp = [{ name: "Wolf" }, { name: "Kelly" }];
 
       const studentClassList = await Classes.getStudents(1);
       const dbStudentInClass = await db("students as s")
         .join("student_classes as sc", "sc.student_id", "s.id")
         .join("classes as c", "sc.class_id", "c.id")
-        .select("s.name", "c.name as class")
+        .select("s.name")
         .orderBy("s.id");
 
       expect(studentClassList).not.toBeNull();

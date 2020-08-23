@@ -188,7 +188,86 @@ describe("server", () => {
 
     //student list for particular class
     describe("GET /classes/:id", () => {
-      it.todo("");
+      it("returns 200 OK when retrieving student list from a particular class of an empty students table", async () => {
+        await db("classes").insert({ name: "Security" });
+        await db("classes").insert({ name: "CS" });
+
+        const firstRes = await supertest(server)
+          .post("/auth/register")
+          .send({ username: "sam", password: "pass", class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/classes/1").set({
+          authorization: token,
+        });
+
+        expect(secondRes.status).toBe(200);
+      });
+
+      it("returns empty array when retrieving student list from a particular class of an empty students table", async () => {
+        await db("classes").insert({ name: "Security" });
+        await db("classes").insert({ name: "CS" });
+
+        const firstRes = await supertest(server)
+          .post("/auth/register")
+          .send({ username: "sam", password: "pass", class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/classes/1").set({
+          authorization: token,
+        });
+
+        expect(secondRes.body.data).toEqual([]);
+      });
+
+      it("returns 200 OK when retrieving student list from a particular class of a non-empty db", async () => {
+        await db("classes").insert({ name: "Security" });
+        await db("classes").insert({ name: "CS" });
+        await db("students").insert({ name: "Frodo", class_id: 1 });
+        await db("students").insert({ name: "Pippin", class_id: 1 });
+        await db("students").insert({ name: "Merry", class_id: 1 });
+
+        const firstRes = await supertest(server)
+          .post("/auth/register")
+          .send({ username: "sam", password: "pass", class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/classes/1").set({
+          authorization: token,
+        });
+
+        expect(secondRes.status).toBe(200);
+      });
+
+      it.only("returns array of students taking a particular class from a non-empty db", async () => {
+        await db("classes").insert({ name: "Security" });
+        await db("classes").insert({ name: "CS" });
+
+        await db("students").insert({ name: "Frodo", class_id: 1 });
+        await db("students").insert({ name: "Pippin", class_id: 2 });
+        await db("students").insert({ name: "Merry", class_id: 1 });
+
+        await db("student_classes").insert({ student_id: 1, class_id: 1 });
+        await db("student_classes").insert({ student_id: 2, class_id: 2 });
+        await db("student_classes").insert({ student_id: 3, class_id: 1 });
+
+        const exp = [{ name: "Frodo" }, { name: "Merry" }];
+
+        const firstRes = await supertest(server)
+          .post("/auth/register")
+          .send({ username: "sam", password: "pass", class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/classes/1").set({
+          authorization: token,
+        });
+
+        expect(secondRes.body.data).toEqual(expect.arrayContaining(exp));
+      });
     });
 
     //task list for particular student
