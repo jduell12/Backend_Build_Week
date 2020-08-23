@@ -1,6 +1,7 @@
 const supertest = require("supertest");
 const server = require("./server");
 const db = require("../data/dbConfig");
+const { setMaxListeners } = require("./server");
 
 describe("server", () => {
   //clear db tables before each test
@@ -169,7 +170,121 @@ describe("server", () => {
 
     //logs in a user
     describe("POST /login", () => {
-      it.todo("");
+      it("returns 200 OK when logging in successfully", async () => {
+        await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const res = await supertest(server).post("/auth/login").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        expect(res.status).toBe(200);
+      });
+
+      it("returns Welcome message in res.body when loggin in successfully", async () => {
+        await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const res = await supertest(server).post("/auth/login").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        expect(res.body.message).toBe("Welcome");
+      });
+
+      it("returns token in res.body when logging in successfully", async () => {
+        await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const res = await supertest(server).post("/auth/login").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        expect(res.body.token).not.toBeNull();
+      });
+
+      it("returns 400 when no username is provided", async () => {
+        await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const res = await supertest(server).post("/auth/login").send({
+          password: "pass",
+        });
+
+        expect(res.status).toBe(400);
+      });
+
+      it("returns 'Please provide a username and password' in res.body when no username is provided", async () => {
+        await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const res = await supertest(server).post("/auth/login").send({
+          password: "pass",
+        });
+
+        expect(res.body.message).toBe("Please provide a username and password");
+      });
+
+      it("returns 400 when no password is provided", async () => {
+        await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const res = await supertest(server).post("/auth/login").send({
+          username: "pass",
+        });
+
+        expect(res.status).toBe(400);
+      });
+
+      it("returns 'Please provide a username and password' in res.body when no password is provided", async () => {
+        await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const res = await supertest(server).post("/auth/login").send({
+          username: "pass",
+        });
+
+        expect(res.body.message).toBe("Please provide a username and password");
+      });
+
+      it("returns 400 when no username and no password are provided", async () => {
+        await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const res = await supertest(server).post("/auth/login").send({});
+
+        expect(res.status).toBe(400);
+      });
+
+      it("returns 'Please provide a username and password' in res.body when no username and no password are provided", async () => {
+        await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const res = await supertest(server).post("/auth/login").send({});
+
+        expect(res.body.message).toBe("Please provide a username and password");
+      });
     });
 
     //add a new class to user's class list
