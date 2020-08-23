@@ -15,7 +15,15 @@ function getStudents() {
 
 //adds a student to the database
 async function addStudent(student) {
-  return db("students").insert(student);
+  if (student.class_id) {
+    const id = await db("students").insert(student);
+    return db("student_classes").insert({
+      student_id: id,
+      class_id: student.class_id,
+    });
+  } else {
+    return db("students").insert(student);
+  }
 }
 
 //updates a student with the given id

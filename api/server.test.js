@@ -796,8 +796,78 @@ describe("server", () => {
     });
 
     //add student to current user's student list
-    describe("POST /user/students", () => {
-      it.todo("");
+    describe("POST /users/students", () => {
+      it("sends 201 OK when adding a new student to the user's list", async () => {
+        await db("classes").insert({ name: "CS" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        await db("users_classes").insert({ user_id: 1, class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/students")
+          .send({ name: "Frodo", class_id: 1 })
+          .set({ authorization: token });
+
+        expect(secondRes.status).toBe(201);
+      });
+
+      it("sends 'Success' message in res.body when adding a new student to the user's list", async () => {
+        await db("classes").insert({ name: "CS" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        await db("users_classes").insert({ user_id: 1, class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/students")
+          .send({ name: "Frodo", class_id: 1 })
+          .set({ authorization: token });
+
+        expect(secondRes.body.message).toBe("Success");
+      });
+
+      it("Successfully adds a new student to the user's list", async () => {
+        await db("classes").insert({ name: "CS" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        await db("users_classes").insert({ user_id: 1, class_id: 1 });
+
+        const exp = [{ name: "Frodo" }, { name: "Merry" }];
+
+        const token = firstRes.body.token;
+
+        await supertest(server)
+          .post("/users/students")
+          .send({ name: "Frodo", class_id: 1 })
+          .set({ authorization: token });
+
+        await supertest(server)
+          .post("/users/students")
+          .send({ name: "Merry", class_id: 1 })
+          .set({ authorization: token });
+
+        const dbStudentList = await db("students as s")
+          .join("users as u", 1, 1)
+          .select("s.name")
+          .orderBy("s.id");
+
+        expect(dbStudentList).toEqual(exp);
+      });
     });
 
     //add task for particular student

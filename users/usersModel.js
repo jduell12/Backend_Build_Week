@@ -4,6 +4,7 @@ module.exports = {
   getUsers,
   addUser,
   addClassUserList,
+  addStudentUserList,
   editUser,
   deleteUser,
   getUserById,
@@ -41,6 +42,14 @@ async function addUser(user) {
 //adds a class to the user's class list
 async function addClassUserList(userId, classId) {
   return db("users_classes").insert({ user_id: userId, class_id: classId });
+}
+
+//adds a student to the user's student list
+async function addStudentUserList(userId, studentId) {
+  return db("professor_students").insert({
+    user_id: userId,
+    student_id: studentId,
+  });
 }
 
 //updates user with given id
