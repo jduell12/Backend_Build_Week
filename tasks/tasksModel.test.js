@@ -141,8 +141,45 @@ describe("tasksModel", () => {
   });
 
   describe("deleteTask", () => {
-    it.todo("");
+    it("returns 1 when sucessfully deletes class from db", async () => {
+      await db("tasks").insert({ name: "to do", due_date: "Sep 1, 2020" });
+      await db("tasks").insert({ name: "to do2", due_date: "Sep 1, 2020" });
+      await db("tasks").insert({ name: "to do3", due_date: "Sep 1, 2020" });
 
-    it.todo("");
+      const expected = [
+        {
+          id: 2,
+          name: "to do2",
+          due_date: "Sep 1, 2020",
+          completed: 0,
+          description: null,
+        },
+        {
+          id: 3,
+          name: "to do3",
+          due_date: "Sep 1, 2020",
+          completed: 0,
+          description: null,
+        },
+      ];
+
+      const deleted = await Tasks.deleteTask(1);
+      const dbTasks = await db("tasks");
+
+      expect(deleted).not.toBeNull();
+      expect(deleted).toBe(1);
+      expect(dbTasks).toEqual(expect.arrayContaining(expected));
+    });
+
+    it("returns 0 when no class with the id is in the db", async () => {
+      const deleted = await Tasks.deleteTask(1);
+      const dbTasks = await db("tasks");
+
+      const expected = [];
+
+      expect(deleted).not.toBeNull();
+      expect(deleted).toBe(0);
+      expect(dbTasks).toEqual(expect.arrayContaining(expected));
+    });
   });
 });

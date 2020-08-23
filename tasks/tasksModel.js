@@ -21,5 +21,5 @@ async function editTask(taskId, task) {
 }
 
 async function deleteTask(taskId) {
-  return null;
+  return db("tasks").where({ id: taskId }).del();
 }
