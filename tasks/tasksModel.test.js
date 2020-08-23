@@ -107,9 +107,37 @@ describe("tasksModel", () => {
   });
 
   describe("editTask", () => {
-    it.todo("");
+    it("edits a task in the database and returns 1", async () => {
+      await db("tasks").insert({ name: "to do", due_date: "Sep 1, 2020" });
 
-    it.todo("");
+      const expected = [
+        {
+          id: 1,
+          name: "todo",
+          due_date: "Sep 1, 2020",
+          completed: 0,
+          description: null,
+        },
+      ];
+
+      const count = await Tasks.editTask(1, { name: "todo" });
+      const dbTasks = await db("tasks");
+
+      expect(count).not.toBeNull();
+      expect(count).toBe(1);
+      expect(dbTasks).toEqual(expect.arrayContaining(expected));
+    });
+
+    it("returns 0 when edit fails due ot wrong id", async () => {
+      const count = await Tasks.editTask(1, { name: "todo" });
+      const dbTasks = await db("tasks");
+
+      const expected = [];
+
+      expect(count).not.toBeNull();
+      expect(count).toBe(0);
+      expect(dbTasks).toEqual(expect.arrayContaining(expected));
+    });
   });
 
   describe("deleteTask", () => {
