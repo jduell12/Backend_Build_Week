@@ -114,7 +114,33 @@ describe("server", () => {
 
     //user's list of classes
     describe("GET /classes/", () => {
-      it.todo("");
+      it("returns 200 OK when getting empty class list of user", async () => {
+        const firstRes = await supertest(server)
+          .post("/auth/register")
+          .send({ username: "sam", password: "pass" });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/classes").set({
+          authorization: token,
+        });
+
+        expect(secondRes.status).toBe(200);
+      });
+
+      it.only("returns empty array when getting empty class list of user", async () => {
+        const firstRes = await supertest(server)
+          .post("/auth/register")
+          .send({ username: "sam", password: "pass" });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server).get("/classes").set({
+          authorization: token,
+        });
+
+        expect(secondRes.body.data).toEqual([]);
+      });
     });
 
     //student list for particular class
