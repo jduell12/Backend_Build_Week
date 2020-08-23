@@ -93,9 +93,25 @@ describe("server", () => {
         expect(newUsers).toHaveLength(4);
       });
 
-      it.todo("");
+      it("returns 201 OK when user is created sucessfully", async () => {
+        const res = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
 
-      it.todo("");
+        expect(res.status).toBe(201);
+      });
+
+      it("returns user username when registered successfully", async () => {
+        const res = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const exp = { username: "sam" };
+
+        expect(res.body.data).toEqual(exp);
+      });
 
       it.todo("");
 
