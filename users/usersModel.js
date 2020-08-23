@@ -16,9 +16,13 @@ function getUsers() {
   return db("users");
 }
 
-//adds a user to the database
+//adds a user to the database and returns the user's username
 async function addUser(user) {
-  return db("users").insert(user);
+  return db("users")
+    .insert(user)
+    .then((id) => {
+      return db("users").where({ id }).select("users.username").first();
+    });
 }
 
 //updates user with given id
