@@ -113,9 +113,58 @@ describe("server", () => {
         expect(res.body.data).toEqual(exp);
       });
 
-      it.todo("");
+      it("returns token when registered successfully", async () => {
+        const res = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
 
-      it.todo("");
+        expect(res.body.token).not.toBeNull();
+      });
+
+      it("returns 400 when user has no username", async () => {
+        const res = await supertest(server).post("/auth/register").send({
+          password: "pass",
+        });
+
+        expect(res.status).toBe(400);
+      });
+
+      it("returns 'Please provide a username and password 'in res.body when user has no username", async () => {
+        const res = await supertest(server).post("/auth/register").send({
+          password: "pass",
+        });
+
+        expect(res.body.message).toBe("Please provide a username and password");
+      });
+
+      it("returns 400 when user has no password", async () => {
+        const res = await supertest(server).post("/auth/register").send({
+          username: "sam",
+        });
+
+        expect(res.status).toBe(400);
+      });
+
+      it("returns 'Please provide a username and password 'in res.body when user has no password", async () => {
+        const res = await supertest(server).post("/auth/register").send({
+          username: "pass",
+        });
+
+        expect(res.body.message).toBe("Please provide a username and password");
+      });
+
+      it("returns 400 when user has no username and no password ", async () => {
+        const res = await supertest(server).post("/auth/register").send({});
+
+        expect(res.status).toBe(400);
+      });
+
+      it("returns 'Please provide a username and password 'in res.body when user has no username and no password", async () => {
+        const res = await supertest(server).post("/auth/register").send({});
+
+        expect(res.body.message).toBe("Please provide a username and password");
+      });
     });
 
     //logs in a user
