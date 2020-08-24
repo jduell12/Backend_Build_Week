@@ -2564,8 +2564,108 @@ describe("server", () => {
     });
 
     //delete student from user's student list
-    describe("DELETE /user/students/:id", () => {
-      it.todo("");
+    describe("DELETE /users/students/:id", () => {
+      it("deletes a student successfully from the db", async () => {
+        await db("classes").insert({ name: "CS" });
+
+        await db("students").insert({ name: "wolf", class_id: 1 });
+        await db("students").insert({ name: "pup", class_id: 1 });
+        await db("students").insert({ name: "dragon", class_id: 1 });
+
+        const expStudents = [
+          { name: "wolf", id: 1 },
+          { name: "dragon", id: 3 },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        await supertest(server)
+          .delete("/users/students/2")
+          .set({ authorization: token });
+
+        const usersDb = await db("students as s").select("s.name", "s.id");
+
+        expect(usersDb).toEqual(expStudents);
+      });
+
+      it("sends 200 OK when deleting a student successfully from the db", async () => {
+        await db("classes").insert({ name: "CS" });
+
+        await db("students").insert({ name: "wolf", class_id: 1 });
+        await db("students").insert({ name: "pup", class_id: 1 });
+        await db("students").insert({ name: "dragon", class_id: 1 });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/users/students/2")
+          .set({ authorization: token });
+
+        expect(secondRes.status).toBe(200);
+      });
+
+      it("sends message 'Deleted student Successfully' when deleting a student successfully from the db", async () => {
+        await db("classes").insert({ name: "CS" });
+
+        await db("students").insert({ name: "wolf", class_id: 1 });
+        await db("students").insert({ name: "pup", class_id: 1 });
+        await db("students").insert({ name: "dragon", class_id: 1 });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/users/students/2")
+          .set({ authorization: token });
+
+        expect(secondRes.body.message).toBe("Deleted student Successfully");
+      });
+
+      it("sends 406 client error when deleting a student that's not in the db", async () => {
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/users/students/2")
+          .set({ authorization: token });
+
+        expect(secondRes.status).toBe(406);
+      });
+
+      it("sends error message 'A student with that id doesn't exist' when deleting a student that's not in the db", async () => {
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/users/students/2")
+          .set({ authorization: token });
+
+        expect(secondRes.body.message).toBe(
+          "A student with that id doesn't exist",
+        );
+      });
     });
 
     //delete task from particular student

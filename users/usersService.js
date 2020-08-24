@@ -1,9 +1,12 @@
+const Students = require("../students/studentsModel");
+
 module.exports = {
   userValid,
   loginValid,
   classValid,
   studentValid,
   editStudentValid,
+  checkStudent,
 };
 
 //checks that a username and password is provided
@@ -33,4 +36,9 @@ function editStudentValid(studentInfo) {
   return Boolean(
     studentInfo.name || (studentInfo.class_id && studentInfo.prevClassId),
   );
+}
+
+//checks that a student with the id exists
+async function checkStudent(studentId) {
+  return Students.getStudentById(studentId);
 }

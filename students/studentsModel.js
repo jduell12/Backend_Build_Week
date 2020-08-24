@@ -2,6 +2,7 @@ const db = require("../data/dbConfig");
 
 module.exports = {
   getStudents,
+  getStudentById,
   addStudent,
   editStudent,
   deleteStudent,
@@ -13,6 +14,11 @@ module.exports = {
 //returns an array of all students in the database
 function getStudents() {
   return db("students");
+}
+
+//returns a student object with a given id
+async function getStudentById(studentId) {
+  return db("students").where({ id: studentId }).first();
 }
 
 //adds a student to the database

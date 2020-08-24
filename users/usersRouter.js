@@ -124,4 +124,22 @@ router.delete("/", async (req, res) => {
   }
 });
 
+//deletes a student in the user's student list
+router.delete("/students/:id", async (req, res) => {
+  const check = await helpers.checkStudent(req.params.id);
+  if (check) {
+    Students.deleteStudent(req.params.id)
+      .then((count) => {
+        res.status(200).json({ message: "Deleted student Successfully" });
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err.message });
+      });
+  } else {
+    res.status(406).json({
+      message: "A student with that id doesn't exist",
+    });
+  }
+});
+
 module.exports = router;
