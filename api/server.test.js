@@ -2394,8 +2394,64 @@ describe("server", () => {
 
   describe("api DELETE requests", () => {
     //delete user
-    describe("DELETE /user", () => {
-      it.todo("");
+    describe("DELETE /users", () => {
+      it("deletes a user successfully from the db", async () => {
+        const expUsers = [
+          { username: "wolf", password: "kelly", class_id: null, id: 2 },
+          { username: "pup", password: "kelly", class_id: null, id: 3 },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        await db("users").insert({ username: "wolf", password: "kelly" });
+        await db("users").insert({ username: "pup", password: "kelly" });
+
+        await supertest(server).delete("/users").set({ authorization: token });
+
+        const usersDb = await db("users");
+        expect(usersDb).toEqual(expUsers);
+      });
+
+      it("sends 200 OK when deleting a user successfully from the db", async () => {
+        await db("users").insert({ username: "wolf", password: "kelly" });
+        await db("users").insert({ username: "pup", password: "kelly" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/users")
+          .set({ authorization: token });
+
+        expect(secondRes.status).toBe(200);
+      });
+
+      it("sends success message 'User deleted Successfully' when deleting a user successfully from the db", async () => {
+        await db("users").insert({ username: "wolf", password: "kelly" });
+        await db("users").insert({ username: "pup", password: "kelly" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/users")
+          .set({ authorization: token });
+
+        expect(secondRes.body.message).toBe("User deleted Successfully");
+      });
     });
 
     //delete class
