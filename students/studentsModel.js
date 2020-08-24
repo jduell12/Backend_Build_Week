@@ -7,6 +7,7 @@ module.exports = {
   deleteStudent,
   getTasks,
   addTasks,
+  editTask,
 };
 
 //returns an array of all students in the database
@@ -29,12 +30,22 @@ async function addStudent(student) {
 
 //updates a student with the given id
 async function editStudent(studentId, student) {
-  return db("students")
-    .where({ id: studentId })
-    .update(student)
-    .then((count) => {
-      return count;
-    });
+  if (student.class_id) {
+    return db("student_classes")
+      .where({ student_id: studentId })
+      .where({ class_id: student.prevClassId })
+      .update({ class_id: student.class_id })
+      .then((count) => {
+        return count;
+      });
+  } else {
+    return db("students")
+      .where({ id: studentId })
+      .update(student)
+      .then((count) => {
+        return count;
+      });
+  }
 }
 
 //deletes student with given id
@@ -55,4 +66,9 @@ async function getTasks(studentId) {
 async function addTasks(studentId, task) {
   const taskId = await db("tasks").insert(task).returning("id");
   return db("student_tasks").insert({ student_id: studentId, task_id: taskId });
+}
+
+//edits a task in the student's task list
+async function editTask(studentId, taskId, task) {
+  return db("tasks as t").where({ id: taskId }).update(task);
 }

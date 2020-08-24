@@ -3,6 +3,7 @@ module.exports = {
   loginValid,
   classValid,
   studentValid,
+  editStudentValid,
 };
 
 //checks that a username and password is provided
@@ -25,4 +26,11 @@ function classValid(classInfo) {
 //checks that the student has all required fields
 function studentValid(studentInfo) {
   return Boolean(studentInfo.name && studentInfo.class_id);
+}
+
+//checks that the edit information has either a name for the student or a class id for the student
+function editStudentValid(studentInfo) {
+  return Boolean(
+    studentInfo.name || (studentInfo.class_id && studentInfo.prevClassId),
+  );
 }

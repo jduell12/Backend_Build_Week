@@ -84,4 +84,24 @@ router.post("/students", async (req, res) => {
   }
 });
 
+//edits a student in the user's student list
+router.put("/students/:id", (req, res) => {
+  if (helpers.editStudentValid(req.body)) {
+    Students.editStudent(req.params.id, req.body)
+      .then((count) => {
+        res.status(200).json({ message: "Edited student successfully" });
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err.message });
+      });
+  } else {
+    res
+      .status(406)
+      .json({
+        message:
+          "Please provide a name for the student or the current class id and previous class id",
+      });
+  }
+});
+
 module.exports = router;
