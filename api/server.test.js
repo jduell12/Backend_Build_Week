@@ -2456,7 +2456,111 @@ describe("server", () => {
 
     //delete class
     describe("DELETE /classes/:id", () => {
-      it.todo("");
+      it("deletes a class successfully from the db", async () => {
+        await db("classes").insert({ name: "CS" });
+        await db("classes").insert({ name: "Psy" });
+        await db("classes").insert({ name: "Math" });
+
+        const expClasses = [
+          { name: "CS", id: 1 },
+          { name: "Math", id: 3 },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        await supertest(server)
+          .delete("/classes/2")
+          .set({ authorization: token });
+
+        const usersDb = await db("classes").select(
+          "classes.name",
+          "classes.id",
+        );
+        expect(usersDb).toEqual(expClasses);
+      });
+
+      it("sends 200 OK when deleting a class successfully from the db", async () => {
+        await db("classes").insert({ name: "CS" });
+        await db("classes").insert({ name: "Psy" });
+        await db("classes").insert({ name: "Math" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/classes/2")
+          .set({ authorization: token });
+
+        expect(secondRes.status).toBe(200);
+      });
+
+      it("sends success message 'Class deleted Successfully when deleting a class successfully from the db", async () => {
+        await db("classes").insert({ name: "CS" });
+        await db("classes").insert({ name: "Psy" });
+        await db("classes").insert({ name: "Math" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/classes/2")
+          .set({ authorization: token });
+
+        const dbClasses = await db("classes");
+
+        expect(secondRes.body.message).toBe("Class deleted Successfully");
+      });
+
+      it("sends 406 client error when deleting a class that doesn't exist in db", async () => {
+        await db("classes").insert({ name: "CS" });
+        await db("classes").insert({ name: "Psy" });
+        await db("classes").insert({ name: "Math" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/classes/4")
+          .set({ authorization: token });
+
+        expect(secondRes.status).toBe(406);
+      });
+
+      it("sends error message 'Class with that id doesn't exist' when deleting a class that doesn't exist in db", async () => {
+        await db("classes").insert({ name: "CS" });
+        await db("classes").insert({ name: "Psy" });
+        await db("classes").insert({ name: "Math" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/classes/4")
+          .set({ authorization: token });
+
+        expect(secondRes.body.message).toBe("Class with that id doesn't exist");
+      });
     });
 
     //delete student from user's student list

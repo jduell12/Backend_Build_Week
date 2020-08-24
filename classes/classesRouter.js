@@ -45,4 +45,20 @@ router.put("/:id", (req, res) => {
   }
 });
 
+//deletes a class with the particular id
+router.delete("/:id", async (req, res) => {
+  const check = await helpers.checkClass(req.params.id);
+  if (check) {
+    Classes.deleteClass(req.params.id)
+      .then((count) => {
+        res.status(200).json({ message: "Class deleted Successfully" });
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err.message });
+      });
+  } else {
+    res.status(406).json({ message: "Class with that id doesn't exist" });
+  }
+});
+
 module.exports = router;
