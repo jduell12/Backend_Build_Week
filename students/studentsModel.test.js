@@ -127,7 +127,7 @@ describe("studentsModel", () => {
         },
       ];
 
-      const tasks = await Students.getTasks();
+      const tasks = await Students.getTasks(1);
       const dbTasks = await db("tasks as t")
         .join("student_tasks as st", "st.task_id", "t.id")
         .join("students as s", "s.id", "st.student_id")

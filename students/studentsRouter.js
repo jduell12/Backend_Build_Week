@@ -30,22 +30,50 @@ router.post("/:id/tasks", (req, res) => {
   }
 });
 
-//edits a task for the student
-router.put("/:id/tasks/:tid", (req, res) => {
+//edits a task of the student
+router.put("/:id/tasks/:tid", async (req, res) => {
   if (helpers.validEditTask(req.body)) {
-    const { name, description, due_date, completed } = req.body;
-    const editTask = { name, description, due_date, completed };
-    Students.editTask(req.params.id, req.params.tid, editTask)
-      .then((count) => {
-        res.status(200).json({ message: "Edited task successfully" });
-      })
-      .catch((err) => {
-        res.status(500).json({ error: err.message });
-      });
+    const check = await helpers.inTaskList(req.params.id, req.params.tid);
+    if (check) {
+      const { name, description, due_date, completed } = req.body;
+      const editTask = { name, description, due_date, completed };
+      Students.editTask(req.params.id, req.params.tid, editTask)
+        .then((count) => {
+          res.status(200).json({ message: "Edited task successfully" });
+        })
+        .catch((err) => {
+          res.status(500).json({ error: err.message });
+        });
+    } else {
+      res.status(406).json({ message: "That student doesn't have that task" });
+    }
   } else {
     res
       .status(406)
       .json({ message: "Please provide information for the task" });
+  }
+});
+
+//deletes a task of the student
+router.delete("/:id/tasks/:tid", async (req, res) => {
+  const check = await helpers.validTaskId(req.params.tid);
+
+  if (check) {
+    const check2 = await helpers.inTaskList(req.params.id);
+
+    if (check2) {
+      Students.deleteTask(req.params.id, req.params.tid)
+        .then((count) => {
+          res.status(200).json({ message: "Deleted task Successfully" });
+        })
+        .catch((err) => {
+          res.status(500).json({ error: err.message });
+        });
+    } else {
+      res.status(406).json({ message: "That student doesn't have that task" });
+    }
+  } else {
+    res.status(406).json({ message: "That task does not exist" });
   }
 });
 

@@ -2669,8 +2669,45 @@ describe("server", () => {
     });
 
     //delete task from particular student
-    describe("DELETE /students/:id/tasks/:id", () => {
-      it.todo("");
+    describe("DELETE /students/:id/tasks/:tid", () => {
+      it.only("deletes a student's task successfully from the db", async () => {
+        await db("classes").insert({ name: "CS" });
+
+        await db("students").insert({ name: "wolf", class_id: 1 });
+        await db("students").insert({ name: "pup", class_id: 1 });
+        await db("students").insert({ name: "dragon", class_id: 1 });
+
+        await db("tasks").insert({ name: "to do", due_date: "Sept 1, 2020" });
+        await db("tasks").insert({ name: "to do2", due_date: "Sept 2, 2020" });
+        await db("tasks").insert({ name: "to do3", due_date: "Sept 3, 2020" });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+        await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+        await db("student_tasks").insert({ student_id: 1, task_id: 3 });
+
+        const expStudents = [];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .delete("/students/1/tasks/3")
+          .set({ authorization: token });
+
+        const usersDb = await db("tasks as t")
+          .join("student_tasks as st", "st.task_id", "t.id")
+          .join("students as s", "s.id", "st.student_id")
+          .where({ "s.id": 1 })
+          .select("t.name", "t.description", "t.due_date", "t.completed")
+          .orderBy("t.id");
+
+        expect(secondRes.status).toBe(200);
+        expect(usersDb).toEqual(expStudents);
+      });
     });
   });
 });

@@ -9,6 +9,7 @@ module.exports = {
   getTasks,
   addTasks,
   editTask,
+  deleteTask,
 };
 
 //returns an array of all students in the database
@@ -77,4 +78,9 @@ async function addTasks(studentId, task) {
 //edits a task in the student's task list
 async function editTask(studentId, taskId, task) {
   return db("tasks as t").where({ id: taskId }).update(task);
+}
+
+//deletes a task in the student's task list
+async function deleteTask(studentId, taskId) {
+  return null;
 }
