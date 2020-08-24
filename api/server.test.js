@@ -1498,7 +1498,7 @@ describe("server", () => {
     });
 
     //edit student information
-    describe("POST /users/students/:id", () => {
+    describe("PUT /users/students/:id", () => {
       it("edits the name of a particular student ", async () => {
         await db("classes").insert({
           name: "CS",
@@ -1847,7 +1847,7 @@ describe("server", () => {
         );
       });
 
-      it.only("sends 406 client error when client doesn't provide current class id of student to edit ", async () => {
+      it("sends 406 client error when client doesn't provide current class id of student to edit ", async () => {
         await db("classes").insert({
           name: "CS",
         });
@@ -1911,8 +1911,60 @@ describe("server", () => {
     });
 
     //edit a task for particular student
-    describe("POST /students/:id/tasks/:id", () => {
-      it.todo("");
+    describe("PUT /students/:id/tasks/:id", () => {
+      it.only("successfully edits task of a particular student", async () => {
+        await db("students").insert({ name: "wolf" });
+        await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+        await db("tasks").insert({
+          name: "to do",
+          due_date: "Sept 1, 2020",
+        });
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+        await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+        const expTasks = [
+          {
+            completed: 0,
+            description: null,
+            due_date: "Sept 1, 2020",
+            name: "find thesis",
+            student: "wolf",
+          },
+          {
+            completed: 0,
+            description: null,
+            due_date: "Sept 1, 2020",
+            name: "to do thesis",
+            student: "wolf",
+          },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        await supertest(server)
+          .put("/students/1/tasks/1")
+          .send({ name: "find thesis" })
+          .set({ authorization: token });
+
+        const dbTasks = await db("tasks as t")
+          .join("student_tasks as st", "st.task_id", "t.id")
+          .join("students as s", "s.id", "st.student_id")
+          .select(
+            "t.name",
+            "t.description",
+            "t.due_date",
+            "t.completed",
+            "s.name as student",
+          )
+          .orderBy("t.id");
+
+        expect(dbTasks).toEqual("");
+      });
     });
   });
 
