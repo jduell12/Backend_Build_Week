@@ -872,6 +872,122 @@ describe("server", () => {
 
     //add task for particular student
     describe("POST /students/:id/tasks", () => {
+      it("adds a task to a particular students empty task list ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        const expTask = [
+          {
+            task: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            name: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        const dbTaskList = await db("student_tasks as st")
+          .join("tasks as t", "st.task_id", "t.id")
+          .join("students as s", "st.student_id", "s.id")
+          .select(
+            "t.name as task",
+            "t.description",
+            "t.due_date",
+            "t.completed",
+            "s.name as student",
+          )
+          .orderBy("s.id");
+
+        expect(dbTaskList).toEqual(expTask);
+      });
+
+      it.only("adds a task to a particular students non-empty task list ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        await db("tasks").insert({
+          name: "to do list",
+          due_date: "Sept 1, 2020",
+        });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const expTask = [
+          {
+            task: "to do list",
+            description: null,
+            due_date: "Sept 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+          {
+            task: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            name: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        const dbTaskList = await db("student_tasks as st")
+          .join("tasks as t", "st.task_id", "t.id")
+          .join("students as s", "st.student_id", "s.id")
+          .select(
+            "t.name as task",
+            "t.description",
+            "t.due_date",
+            "t.completed",
+            "s.name as student",
+          )
+          .orderBy("s.id");
+
+        expect(dbTaskList).toEqual(expTask);
+      });
+
+      it.todo("");
+
+      it.todo("");
+
       it.todo("");
     });
   });
