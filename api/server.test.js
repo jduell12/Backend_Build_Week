@@ -1351,642 +1351,1066 @@ describe("server", () => {
   //   });
   // });
 
-  describe("api PUT requests to edit db", () => {
-    //edit class information
-    describe("PUT /classes/:id", () => {
-      it("edits the class information of a particular class", async () => {
-        await db("classes").insert({ name: "CS" });
-        await db("classes").insert({ name: "Psy" });
-        await db("classes").insert({ name: "Math" });
-
-        const expClass = [
-          {
-            id: 1,
-            name: "Computer Science",
-            description: null,
-          },
-          {
-            id: 2,
-            name: "Psy",
-            description: null,
-          },
-          {
-            id: 3,
-            name: "Math",
-            description: null,
-          },
-        ];
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        await db("users_classes").insert({ class_id: 1, user_id: 1 });
-
-        const secondRes = await supertest(server)
-          .put("/classes/1")
-          .send({
-            name: "Computer Science",
-          })
-          .set({
-            authorization: token,
-          });
-
-        const dbClasses = await db("classes");
-
-        expect(dbClasses).toEqual(expClass);
-      });
-
-      it("sends 200 when successfully editing the class information of a particular class", async () => {
-        await db("classes").insert({ name: "CS" });
-        await db("classes").insert({ name: "Psy" });
-        await db("classes").insert({ name: "Math" });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        await db("users_classes").insert({ class_id: 1, user_id: 1 });
-
-        const secondRes = await supertest(server)
-          .put("/classes/1")
-          .send({
-            name: "Computer Science",
-          })
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.status).toBe(200);
-      });
-
-      it("sends success message 'Success' when successfully editing the class information of a particular class", async () => {
-        await db("classes").insert({ name: "CS" });
-        await db("classes").insert({ name: "Psy" });
-        await db("classes").insert({ name: "Math" });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        await db("users_classes").insert({ class_id: 1, user_id: 1 });
-
-        const secondRes = await supertest(server)
-          .put("/classes/1")
-          .send({
-            name: "Computer Science",
-          })
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.body.message).toBe("Success");
-      });
-
-      it("sends error message 'Please provide a name for the class' when not supplying the new name of the class that's being edited", async () => {
-        await db("classes").insert({ name: "CS" });
-        await db("classes").insert({ name: "Psy" });
-        await db("classes").insert({ name: "Math" });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        await db("users_classes").insert({ class_id: 1, user_id: 1 });
-
-        const secondRes = await supertest(server).put("/classes/1").send().set({
-          authorization: token,
-        });
-
-        expect(secondRes.body.message).toBe(
-          "Please provide a name for the class",
-        );
-      });
-
-      it("sends 406 client error when not supplying the new name of the class that's being edited", async () => {
-        await db("classes").insert({ name: "CS" });
-        await db("classes").insert({ name: "Psy" });
-        await db("classes").insert({ name: "Math" });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        await db("users_classes").insert({ class_id: 1, user_id: 1 });
-
-        const secondRes = await supertest(server).put("/classes/1").send().set({
-          authorization: token,
-        });
-
-        expect(secondRes.status).toBe(406);
-      });
-    });
-
-    //edit student information
-    describe("PUT /users/students/:id", () => {
-      it("edits the name of a particular student ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const expStudent = [{ name: "Kelly", class: "CS" }];
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({
-            name: "Kelly",
-          })
-          .set({
-            authorization: token,
-          });
-
-        const dbStudent = await db("student_classes as sc")
-          .join("students as s", "sc.student_id", "s.id")
-          .join("classes as c", "sc.class_id", "c.id")
-          .select("s.name", "c.name as class")
-          .orderBy("s.id");
-
-        expect(dbStudent).toEqual(expStudent);
-      });
-
-      it("sends 200 OK when editing the name of a particular student ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({
-            name: "Kelly",
-          })
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.status).toBe(200);
-      });
-
-      it("sends success message 'Edited student successfully' when editing the name of a particular student ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({
-            name: "Kelly",
-          })
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.body.message).toBe("Edited student successfully");
-      });
-
-      it("edits the class of a particular student ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("classes").insert({
-          name: "Psy",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const expStudent = [{ name: "wolf", class: "Psy" }];
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({
-            class_id: 2,
-            prevClassId: 1,
-          })
-          .set({
-            authorization: token,
-          });
-
-        const dbStudent = await db("student_classes as sc")
-          .join("students as s", "sc.student_id", "s.id")
-          .join("classes as c", "sc.class_id", "c.id")
-          .select("s.name", "c.name as class")
-          .orderBy("s.id");
-
-        expect(dbStudent).toEqual(expStudent);
-      });
-
-      it("sends 200 OK when editing the class of a particular student ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("classes").insert({
-          name: "Psy",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const expStudent = [{ name: "wolf", class: "Psy" }];
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({
-            class_id: 2,
-            prevClassId: 1,
-          })
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.status).toBe(200);
-      });
-
-      it("sends success message 'Edited student successfully' when editing the class of a particular student ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("classes").insert({
-          name: "Psy",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const expStudent = [{ name: "wolf", class: "Psy" }];
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({
-            class_id: 2,
-            prevClassId: 1,
-          })
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.body.message).toBe("Edited student successfully");
-      });
-
-      it("sends 406 client error when client doesn't provide name of student to edit ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({})
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.status).toBe(406);
-      });
-
-      it("sends message 'Please provide a name for the student or the current class id and previous class id' when client doesn't provide name of student to edit ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({})
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.body.message).toBe(
-          "Please provide a name for the student or the current class id and previous class id",
-        );
-      });
-
-      it("sends 406 client error when client doesn't provide previous class id of student to edit ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({ class_id: 2 })
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.status).toBe(406);
-      });
-
-      it("sends message 'Please provide a name for the student or the current class id and previous class id' when client doesn't provide previous class id of student to edit ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({ class_id: 2 })
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.body.message).toBe(
-          "Please provide a name for the student or the current class id and previous class id",
-        );
-      });
-
-      it("sends 406 client error when client doesn't provide current class id of student to edit ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({ prevClassId: 2 })
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.status).toBe(406);
-      });
-
-      it("sends message 'Please provide a name for the student or the current class id and previous class id' when client doesn't provide current class id of student to edit ", async () => {
-        await db("classes").insert({
-          name: "CS",
-        });
-        await db("students").insert({
-          name: "wolf",
-          class_id: 1,
-        });
-        await db("student_classes").insert({
-          student_id: 1,
-          class_id: 1,
-        });
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        const secondRes = await supertest(server)
-          .put("/users/students/1")
-          .send({ prevClassId: 2 })
-          .set({
-            authorization: token,
-          });
-
-        expect(secondRes.body.message).toBe(
-          "Please provide a name for the student or the current class id and previous class id",
-        );
-      });
-    });
-
-    //edit a task for particular student
-    describe("PUT /students/:id/tasks/:id", () => {
-      it.only("successfully edits task of a particular student", async () => {
-        await db("students").insert({ name: "wolf" });
-        await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
-        await db("tasks").insert({
-          name: "to do",
-          due_date: "Sept 1, 2020",
-        });
-        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
-        await db("student_tasks").insert({ student_id: 1, task_id: 2 });
-
-        const expTasks = [
-          {
-            completed: 0,
-            description: null,
-            due_date: "Sept 1, 2020",
-            name: "find thesis",
-            student: "wolf",
-          },
-          {
-            completed: 0,
-            description: null,
-            due_date: "Sept 1, 2020",
-            name: "to do thesis",
-            student: "wolf",
-          },
-        ];
-
-        const firstRes = await supertest(server).post("/auth/register").send({
-          username: "sam",
-          password: "pass",
-        });
-
-        const token = firstRes.body.token;
-
-        await supertest(server)
-          .put("/students/1/tasks/1")
-          .send({ name: "find thesis" })
-          .set({ authorization: token });
-
-        const dbTasks = await db("tasks as t")
-          .join("student_tasks as st", "st.task_id", "t.id")
-          .join("students as s", "s.id", "st.student_id")
-          .select(
-            "t.name",
-            "t.description",
-            "t.due_date",
-            "t.completed",
-            "s.name as student",
-          )
-          .orderBy("t.id");
-
-        expect(dbTasks).toEqual("");
-      });
-    });
-  });
-
-  //   describe("api DELETE requests", () => {
-  //     //delete user
-  //     describe("DELETE /user", () => {
-  //       it.todo("");
+  // describe("api PUT requests to edit db", () => {
+  //   //edit class information
+  //   describe("PUT /classes/:id", () => {
+  //     it("edits the class information of a particular class", async () => {
+  //       await db("classes").insert({ name: "CS" });
+  //       await db("classes").insert({ name: "Psy" });
+  //       await db("classes").insert({ name: "Math" });
+
+  //       const expClass = [
+  //         {
+  //           id: 1,
+  //           name: "Computer Science",
+  //           description: null,
+  //         },
+  //         {
+  //           id: 2,
+  //           name: "Psy",
+  //           description: null,
+  //         },
+  //         {
+  //           id: 3,
+  //           name: "Math",
+  //           description: null,
+  //         },
+  //       ];
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       await db("users_classes").insert({ class_id: 1, user_id: 1 });
+
+  //       const secondRes = await supertest(server)
+  //         .put("/classes/1")
+  //         .send({
+  //           name: "Computer Science",
+  //         })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       const dbClasses = await db("classes");
+
+  //       expect(dbClasses).toEqual(expClass);
   //     });
 
-  //     //delete class
-  //     describe("DELETE /classes/:id", () => {
-  //       it.todo("");
+  //     it("sends 200 when successfully editing the class information of a particular class", async () => {
+  //       await db("classes").insert({ name: "CS" });
+  //       await db("classes").insert({ name: "Psy" });
+  //       await db("classes").insert({ name: "Math" });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       await db("users_classes").insert({ class_id: 1, user_id: 1 });
+
+  //       const secondRes = await supertest(server)
+  //         .put("/classes/1")
+  //         .send({
+  //           name: "Computer Science",
+  //         })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.status).toBe(200);
   //     });
 
-  //     //delete student from user's student list
-  //     describe("DELETE /user/students/:id", () => {
-  //       it.todo("");
+  //     it("sends success message 'Success' when successfully editing the class information of a particular class", async () => {
+  //       await db("classes").insert({ name: "CS" });
+  //       await db("classes").insert({ name: "Psy" });
+  //       await db("classes").insert({ name: "Math" });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       await db("users_classes").insert({ class_id: 1, user_id: 1 });
+
+  //       const secondRes = await supertest(server)
+  //         .put("/classes/1")
+  //         .send({
+  //           name: "Computer Science",
+  //         })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.body.message).toBe("Success");
   //     });
 
-  //     //delete task from particular student
-  //     describe("DELETE /students/:id/tasks/:id", () => {
-  //       it.todo("");
+  //     it("sends error message 'Please provide a name for the class' when not supplying the new name of the class that's being edited", async () => {
+  //       await db("classes").insert({ name: "CS" });
+  //       await db("classes").insert({ name: "Psy" });
+  //       await db("classes").insert({ name: "Math" });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       await db("users_classes").insert({ class_id: 1, user_id: 1 });
+
+  //       const secondRes = await supertest(server).put("/classes/1").send().set({
+  //         authorization: token,
+  //       });
+
+  //       expect(secondRes.body.message).toBe(
+  //         "Please provide a name for the class",
+  //       );
+  //     });
+
+  //     it("sends 406 client error when not supplying the new name of the class that's being edited", async () => {
+  //       await db("classes").insert({ name: "CS" });
+  //       await db("classes").insert({ name: "Psy" });
+  //       await db("classes").insert({ name: "Math" });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       await db("users_classes").insert({ class_id: 1, user_id: 1 });
+
+  //       const secondRes = await supertest(server).put("/classes/1").send().set({
+  //         authorization: token,
+  //       });
+
+  //       expect(secondRes.status).toBe(406);
   //     });
   //   });
+
+  //   //edit student information
+  //   describe("PUT /users/students/:id", () => {
+  //     it("edits the name of a particular student ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const expStudent = [{ name: "Kelly", class: "CS" }];
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({
+  //           name: "Kelly",
+  //         })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       const dbStudent = await db("student_classes as sc")
+  //         .join("students as s", "sc.student_id", "s.id")
+  //         .join("classes as c", "sc.class_id", "c.id")
+  //         .select("s.name", "c.name as class")
+  //         .orderBy("s.id");
+
+  //       expect(dbStudent).toEqual(expStudent);
+  //     });
+
+  //     it("sends 200 OK when editing the name of a particular student ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({
+  //           name: "Kelly",
+  //         })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.status).toBe(200);
+  //     });
+
+  //     it("sends success message 'Edited student successfully' when editing the name of a particular student ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({
+  //           name: "Kelly",
+  //         })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.body.message).toBe("Edited student successfully");
+  //     });
+
+  //     it("edits the class of a particular student ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("classes").insert({
+  //         name: "Psy",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const expStudent = [{ name: "wolf", class: "Psy" }];
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({
+  //           class_id: 2,
+  //           prevClassId: 1,
+  //         })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       const dbStudent = await db("student_classes as sc")
+  //         .join("students as s", "sc.student_id", "s.id")
+  //         .join("classes as c", "sc.class_id", "c.id")
+  //         .select("s.name", "c.name as class")
+  //         .orderBy("s.id");
+
+  //       expect(dbStudent).toEqual(expStudent);
+  //     });
+
+  //     it("sends 200 OK when editing the class of a particular student ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("classes").insert({
+  //         name: "Psy",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const expStudent = [{ name: "wolf", class: "Psy" }];
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({
+  //           class_id: 2,
+  //           prevClassId: 1,
+  //         })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.status).toBe(200);
+  //     });
+
+  //     it("sends success message 'Edited student successfully' when editing the class of a particular student ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("classes").insert({
+  //         name: "Psy",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const expStudent = [{ name: "wolf", class: "Psy" }];
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({
+  //           class_id: 2,
+  //           prevClassId: 1,
+  //         })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.body.message).toBe("Edited student successfully");
+  //     });
+
+  //     it("sends 406 client error when client doesn't provide name of student to edit ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({})
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.status).toBe(406);
+  //     });
+
+  //     it("sends message 'Please provide a name for the student or the current class id and previous class id' when client doesn't provide name of student to edit ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({})
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.body.message).toBe(
+  //         "Please provide a name for the student or the current class id and previous class id",
+  //       );
+  //     });
+
+  //     it("sends 406 client error when client doesn't provide previous class id of student to edit ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({ class_id: 2 })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.status).toBe(406);
+  //     });
+
+  //     it("sends message 'Please provide a name for the student or the current class id and previous class id' when client doesn't provide previous class id of student to edit ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({ class_id: 2 })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.body.message).toBe(
+  //         "Please provide a name for the student or the current class id and previous class id",
+  //       );
+  //     });
+
+  //     it("sends 406 client error when client doesn't provide current class id of student to edit ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({ prevClassId: 2 })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.status).toBe(406);
+  //     });
+
+  //     it("sends message 'Please provide a name for the student or the current class id and previous class id' when client doesn't provide current class id of student to edit ", async () => {
+  //       await db("classes").insert({
+  //         name: "CS",
+  //       });
+  //       await db("students").insert({
+  //         name: "wolf",
+  //         class_id: 1,
+  //       });
+  //       await db("student_classes").insert({
+  //         student_id: 1,
+  //         class_id: 1,
+  //       });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/users/students/1")
+  //         .send({ prevClassId: 2 })
+  //         .set({
+  //           authorization: token,
+  //         });
+
+  //       expect(secondRes.body.message).toBe(
+  //         "Please provide a name for the student or the current class id and previous class id",
+  //       );
+  //     });
+  //   });
+
+  //   //edit a task for particular student
+  //   describe("PUT /students/:id/tasks/:id", () => {
+  //     //name
+  //     it("successfully edits name of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const expTasks = [
+  //         {
+  //           completed: 0,
+  //           description: null,
+  //           due_date: "Sept 1, 2020",
+  //           name: "find thesis",
+  //           student: "wolf",
+  //         },
+  //         {
+  //           completed: 0,
+  //           description: null,
+  //           due_date: "Sept 1, 2020",
+  //           name: "to do",
+  //           student: "wolf",
+  //         },
+  //       ];
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       await supertest(server)
+  //         .put("/students/1/tasks/1")
+  //         .send({ name: "find thesis" })
+  //         .set({ authorization: token });
+
+  //       const dbTasks = await db("tasks as t")
+  //         .join("student_tasks as st", "st.task_id", "t.id")
+  //         .join("students as s", "s.id", "st.student_id")
+  //         .select(
+  //           "t.name",
+  //           "t.description",
+  //           "t.due_date",
+  //           "t.completed",
+  //           "s.name as student",
+  //         )
+  //         .orderBy("t.id");
+
+  //       expect(dbTasks).toEqual(expTasks);
+  //     });
+
+  //     it("sends 200 OK when successfully edits name of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/students/1/tasks/1")
+  //         .send({ name: "find thesis" })
+  //         .set({ authorization: token });
+
+  //       expect(secondRes.status).toBe(200);
+  //     });
+
+  //     it("sends success message 'Edited task successfully' when successfully edits name of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/students/1/tasks/1")
+  //         .send({ name: "find thesis" })
+  //         .set({ authorization: token });
+
+  //       expect(secondRes.body.message).toBe("Edited task successfully");
+  //     });
+
+  //     //due_date
+  //     it("successfully edits due_date of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const expTasks = [
+  //         {
+  //           completed: 0,
+  //           description: null,
+  //           due_date: "Sept 1, 2020",
+  //           name: "thesis",
+  //           student: "wolf",
+  //         },
+  //         {
+  //           completed: 0,
+  //           description: null,
+  //           due_date: "Oct 1, 2020",
+  //           name: "to do",
+  //           student: "wolf",
+  //         },
+  //       ];
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       await supertest(server)
+  //         .put("/students/1/tasks/2")
+  //         .send({ due_date: "Oct 1, 2020" })
+  //         .set({ authorization: token });
+
+  //       const dbTasks = await db("tasks as t")
+  //         .join("student_tasks as st", "st.task_id", "t.id")
+  //         .join("students as s", "s.id", "st.student_id")
+  //         .select(
+  //           "t.name",
+  //           "t.description",
+  //           "t.due_date",
+  //           "t.completed",
+  //           "s.name as student",
+  //         )
+  //         .orderBy("t.id");
+
+  //       expect(dbTasks).toEqual(expTasks);
+  //     });
+
+  //     it("sends 200 OK when successfully edits due_date of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/students/1/tasks/2")
+  //         .send({ due_date: "Oct 1, 2020" })
+  //         .set({ authorization: token });
+
+  //       expect(secondRes.status).toBe(200);
+  //     });
+
+  //     it("sends success message 'Edited task successully' when successfully edits due_date of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/students/1/tasks/2")
+  //         .send({ due_date: "Oct 1, 2020" })
+  //         .set({ authorization: token });
+
+  //       expect(secondRes.body.message).toBe("Edited task successfully");
+  //     });
+
+  //     //description
+  //     it("successfully edits description of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const expTasks = [
+  //         {
+  //           completed: 0,
+  //           description: "find topic",
+  //           due_date: "Sept 1, 2020",
+  //           name: "thesis",
+  //           student: "wolf",
+  //         },
+  //         {
+  //           completed: 0,
+  //           description: null,
+  //           due_date: "Sept 1, 2020",
+  //           name: "to do",
+  //           student: "wolf",
+  //         },
+  //       ];
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       await supertest(server)
+  //         .put("/students/1/tasks/1")
+  //         .send({ description: "find topic" })
+  //         .set({ authorization: token });
+
+  //       const dbTasks = await db("tasks as t")
+  //         .join("student_tasks as st", "st.task_id", "t.id")
+  //         .join("students as s", "s.id", "st.student_id")
+  //         .select(
+  //           "t.name",
+  //           "t.description",
+  //           "t.due_date",
+  //           "t.completed",
+  //           "s.name as student",
+  //         )
+  //         .orderBy("t.id");
+
+  //       expect(dbTasks).toEqual(expTasks);
+  //     });
+
+  //     it("sends 200 OK when successfully edits description of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/students/1/tasks/1")
+  //         .send({ description: "find topic" })
+  //         .set({ authorization: token });
+
+  //       expect(secondRes.status).toBe(200);
+  //     });
+
+  //     it("sends success message 'Edited task successfully' when successfully edits description of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/students/1/tasks/1")
+  //         .send({ description: "find topic" })
+  //         .set({ authorization: token });
+
+  //       expect(secondRes.body.message).toBe("Edited task successfully");
+  //     });
+
+  //     //completed
+  //     it("successfully edits completed of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const expTasks = [
+  //         {
+  //           completed: 0,
+  //           description: null,
+  //           due_date: "Sept 1, 2020",
+  //           name: "thesis",
+  //           student: "wolf",
+  //         },
+  //         {
+  //           completed: 1,
+  //           description: null,
+  //           due_date: "Sept 1, 2020",
+  //           name: "to do",
+  //           student: "wolf",
+  //         },
+  //       ];
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       await supertest(server)
+  //         .put("/students/1/tasks/2")
+  //         .send({ completed: true })
+  //         .set({ authorization: token });
+
+  //       const dbTasks = await db("tasks as t")
+  //         .join("student_tasks as st", "st.task_id", "t.id")
+  //         .join("students as s", "s.id", "st.student_id")
+  //         .select(
+  //           "t.name",
+  //           "t.description",
+  //           "t.due_date",
+  //           "t.completed",
+  //           "s.name as student",
+  //         )
+  //         .orderBy("t.id");
+
+  //       expect(dbTasks).toEqual(expTasks);
+  //     });
+
+  //     it("sends 200 OK when successfully edits completed of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/students/1/tasks/2")
+  //         .send({ completed: true })
+  //         .set({ authorization: token });
+
+  //       expect(secondRes.status).toBe(200);
+  //     });
+
+  //     it("sends success message 'Edited task successfully' when successfully edits completed of a task of a particular student", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({ name: "thesis", due_date: "Sept 1, 2020" });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/students/1/tasks/2")
+  //         .send({ completed: true })
+  //         .set({ authorization: token });
+
+  //       expect(secondRes.body.message).toBe("Edited task successfully");
+  //     });
+
+  //     it("sends 406 client error when no information is supplied", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({
+  //         name: "thesis",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/students/1/tasks/1")
+  //         .send({})
+  //         .set({ authorization: token });
+
+  //       expect(secondRes.status).toBe(406);
+  //     });
+
+  //     it("sends error message 'Please provide information for the task' when no information is supplied", async () => {
+  //       await db("students").insert({ name: "wolf" });
+  //       await db("tasks").insert({
+  //         name: "thesis",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("tasks").insert({
+  //         name: "to do",
+  //         due_date: "Sept 1, 2020",
+  //       });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+  //       await db("student_tasks").insert({ student_id: 1, task_id: 2 });
+
+  //       const firstRes = await supertest(server).post("/auth/register").send({
+  //         username: "sam",
+  //         password: "pass",
+  //       });
+
+  //       const token = firstRes.body.token;
+
+  //       const secondRes = await supertest(server)
+  //         .put("/students/1/tasks/1")
+  //         .send({})
+  //         .set({ authorization: token });
+
+  //       expect(secondRes.body.message).toBe(
+  //         "Please provide information for the task",
+  //       );
+  //     });
+  //   });
+  // });
+
+  describe("api DELETE requests", () => {
+    //delete user
+    describe("DELETE /user", () => {
+      it.todo("");
+    });
+
+    //delete class
+    describe("DELETE /classes/:id", () => {
+      it.todo("");
+    });
+
+    //delete student from user's student list
+    describe("DELETE /user/students/:id", () => {
+      it.todo("");
+    });
+
+    //delete task from particular student
+    describe("DELETE /students/:id/tasks/:id", () => {
+      it.todo("");
+    });
+  });
 });

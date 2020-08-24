@@ -32,7 +32,7 @@ router.post("/:id/tasks", (req, res) => {
 
 //edits a task for the student
 router.put("/:id/tasks/:tid", (req, res) => {
-  if (req.body) {
+  if (helpers.validEditTask(req.body)) {
     const { name, description, due_date, completed } = req.body;
     const editTask = { name, description, due_date, completed };
     Students.editTask(req.params.id, req.params.tid, editTask)

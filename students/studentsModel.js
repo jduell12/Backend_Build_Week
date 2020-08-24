@@ -70,8 +70,5 @@ async function addTasks(studentId, task) {
 
 //edits a task in the student's task list
 async function editTask(studentId, taskId, task) {
-  return db("tasks as t")
-    .join("student_tasks as st", taskId, "st.task_id")
-    .join("students as s", studentId, "st.student_id")
-    .update(task);
+  return db("tasks as t").where({ id: taskId }).update(task);
 }
