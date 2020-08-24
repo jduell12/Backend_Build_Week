@@ -1,5 +1,6 @@
 const db = require("../data/dbConfig");
 const Students = require("./studentsModel");
+const Tasks = require("../tasks/tasksModel");
 
 module.exports = {
   validTask,
@@ -21,10 +22,7 @@ function validEditTask(task) {
 }
 
 //checks that the task is in the student's task list
-async function inTaskList(studentId, taskId) {
-  const check = await Students.getTasks(studentId);
-  return Boolean(check);
-}
+async function inTaskList(studentId, taskId) {}
 
 //checks that a task with the id exists
 async function validTaskId(taskId) {

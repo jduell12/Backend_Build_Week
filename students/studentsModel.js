@@ -7,6 +7,7 @@ module.exports = {
   editStudent,
   deleteStudent,
   getTasks,
+  getTasksIds,
   addTasks,
   editTask,
   deleteTask,
@@ -65,7 +66,18 @@ async function getTasks(studentId) {
   return db("tasks as t")
     .join("student_tasks as st", "st.task_id", "t.id")
     .join("students as s", "s.id", "st.student_id")
-    .select("t.name", "t.description", "t.due_date", "t.completed")
+    .where("s.id", studentId)
+    .select("t.id", "t.name", "t.description", "t.due_date", "t.completed")
+    .orderBy("t.id");
+}
+
+//returns an array of task ids
+async function getTasksIds(studentId) {
+  return db("tasks as t")
+    .join("student_tasks as st", "st.task_id", "t.id")
+    .join("students as s", "s.id", "st.student_id")
+    .where("s.id", studentId)
+    .select("t.id")
     .orderBy("t.id");
 }
 
@@ -81,6 +93,6 @@ async function editTask(studentId, taskId, task) {
 }
 
 //deletes a task in the student's task list
-async function deleteTask(studentId, taskId) {
-  return null;
+async function deleteTask(taskId) {
+  return db("tasks as t").where({ id: taskId }).del();
 }
