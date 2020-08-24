@@ -29,12 +29,22 @@ async function addStudent(student) {
 
 //updates a student with the given id
 async function editStudent(studentId, student) {
-  return db("students")
-    .where({ id: studentId })
-    .update(student)
-    .then((count) => {
-      return count;
-    });
+  if (student.class_id) {
+    return db("student_classes")
+      .where({ student_id: studentId })
+      .where({ class_id: student.prevClassId })
+      .update({ class_id: student.class_id })
+      .then((count) => {
+        return count;
+      });
+  } else {
+    return db("students")
+      .where({ id: studentId })
+      .update(student)
+      .then((count) => {
+        return count;
+      });
+  }
 }
 
 //deletes student with given id
