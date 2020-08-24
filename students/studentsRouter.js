@@ -35,8 +35,8 @@ router.post("/:id/tasks", (req, res) => {
 //edits a task of the student
 router.put("/:id/tasks/:tid", async (req, res) => {
   if (helpers.validEditTask(req.body)) {
-    const check = await helpers.inTaskList(req.params.id, req.params.tid);
-    if (check) {
+    const check = await helpers.validTaskId(req.params.tid);
+    if (check.length !== 0) {
       const { name, description, due_date, completed } = req.body;
       const editTask = { name, description, due_date, completed };
       Students.editTask(req.params.id, req.params.tid, editTask)
@@ -59,7 +59,6 @@ router.put("/:id/tasks/:tid", async (req, res) => {
 //deletes a task of the student
 router.delete("/:id/tasks/:tid", async (req, res) => {
   const check = await helpers.validTaskId(req.params.tid);
-  console.log(check.length);
 
   if (check.length !== 0) {
     let tasks = await Students.getTasksIds(req.params.id)
@@ -67,11 +66,10 @@ router.delete("/:id/tasks/:tid", async (req, res) => {
         return tasks;
       })
       .catch((err) => {
-        res.status(500).end();
+        res.status(500).json({ error: err.message });
       });
 
     let check2 = tasks.filter((task) => task.id === parseInt(req.params.tid));
-    console.log(check2.length);
 
     if (check2.length !== 0) {
       Students.deleteTask(req.params.tid)
