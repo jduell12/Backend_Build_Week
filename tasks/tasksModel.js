@@ -1,5 +1,4 @@
 const db = require("../data/dbConfig");
-const Tasks = require("./tasksModel.test");
 
 module.exports = {
   getTasks,

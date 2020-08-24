@@ -2,6 +2,7 @@ const db = require("../data/dbConfig");
 
 module.exports = {
   getClasses,
+  getClassById,
   addClass,
   editClass,
   deleteClass,
@@ -11,6 +12,11 @@ module.exports = {
 //returns an array of all classes in database
 function getClasses() {
   return db("classes");
+}
+
+//returns a class object if it exists
+async function getClassById(id) {
+  return db("classes").where({ id }).first();
 }
 
 //adds a class to the database

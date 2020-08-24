@@ -114,29 +114,32 @@ describe("studentsModel", () => {
 
       const exp = [
         {
-          name: "to do",
-          due_date: "Sep 1, 2020",
           completed: 0,
           description: null,
+          due_date: "Sep 1, 2020",
+          id: 1,
+          name: "to do",
         },
         {
-          name: "to do3",
-          due_date: "Sep 1, 2020",
           completed: 0,
           description: null,
+          due_date: "Sep 1, 2020",
+          id: 3,
+          name: "to do3",
         },
       ];
 
-      const tasks = await Students.getTasks();
+      const tasks = await Students.getTasks(1);
       const dbTasks = await db("tasks as t")
         .join("student_tasks as st", "st.task_id", "t.id")
         .join("students as s", "s.id", "st.student_id")
-        .select("t.name", "t.description", "t.due_date", "t.completed")
+        .where("s.id", 1)
+        .select("t.id", "t.name", "t.description", "t.due_date", "t.completed")
         .orderBy("t.id");
 
       expect(tasks).not.toBeNull();
       expect(tasks).toEqual(expect.arrayContaining(exp));
-      expect(dbTasks).toEqual(expect.arrayContaining(tasks));
+      expect(dbTasks).toEqual(exp);
       expect(tasks.length).toBe(dbTasks.length);
     });
   });

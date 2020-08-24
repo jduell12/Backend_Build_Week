@@ -95,12 +95,50 @@ router.put("/students/:id", (req, res) => {
         res.status(500).json({ error: err.message });
       });
   } else {
+    res.status(406).json({
+      message:
+        "Please provide a name for the student or the current class id and previous class id",
+    });
+  }
+});
+
+//deletes a user from db
+router.delete("/", async (req, res) => {
+  let userNum = "";
+  await Users.getUserByUsername(req.jwt.username).then((user) => {
+    userNum = user.id;
+  });
+
+  if (userNum != null || userNum != undefined) {
+    Users.deleteUser(userNum)
+      .then((count) => {
+        res.status(200).json({ message: "User deleted Successfully" });
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err.message });
+      });
+  } else {
     res
       .status(406)
-      .json({
-        message:
-          "Please provide a name for the student or the current class id and previous class id",
+      .json({ message: "No user with that username or id exists" });
+  }
+});
+
+//deletes a student in the user's student list
+router.delete("/students/:id", async (req, res) => {
+  const check = await helpers.checkStudent(req.params.id);
+  if (check) {
+    Students.deleteStudent(req.params.id)
+      .then((count) => {
+        res.status(200).json({ message: "Deleted student Successfully" });
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err.message });
       });
+  } else {
+    res.status(406).json({
+      message: "A student with that id doesn't exist",
+    });
   }
 });
 
