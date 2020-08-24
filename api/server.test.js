@@ -679,18 +679,675 @@ describe("server", () => {
     });
 
     //add a new class to user's class list
-    describe("POST /user/classes", () => {
-      it.todo("");
+    describe("POST /users/classes", () => {
+      it("adds a new class to the user's class list", async () => {
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/classes")
+          .send({
+            name: "Security",
+            description: "Learning to safeguard ",
+          })
+          .set({ authorization: token });
+
+        const thirdRes = await supertest(server)
+          .post("/users/classes")
+          .send({
+            name: "Adventure",
+            description: "Learning to safeguard ",
+          })
+          .set({ authorization: token });
+
+        const exp = [{ name: "Security" }, { name: "Adventure" }];
+
+        const dbUserList = await db("classes as c")
+          .join("users_classes as uc", "uc.class_id", "c.id")
+          .join("users as u", "uc.user_id", "u.id")
+          .select("c.name")
+          .orderBy("c.id");
+
+        expect(dbUserList).toHaveLength(2);
+        expect(dbUserList).toEqual(expect.arrayContaining(exp));
+      });
+
+      it("receives 201 OK when adding a new class to the user's class list", async () => {
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/classes")
+          .send({
+            name: "Security",
+            description: "Learning to safeguard ",
+          })
+          .set({ authorization: token });
+
+        const dbUserList = await db("classes as c")
+          .join("users_classes as uc", "uc.class_id", "c.id")
+          .join("users as u", "uc.user_id", "u.id")
+          .select("c.name")
+          .orderBy("c.id");
+
+        expect(dbUserList).toHaveLength(1);
+        expect(secondRes.status).toBe(201);
+      });
+
+      it("receives 406 Not Acceptable when adding a new class to the user's class list without the required elements", async () => {
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/classes")
+          .send({
+            description: "Learning to safeguard ",
+          })
+          .set({ authorization: token });
+
+        const dbUserList = await db("classes as c")
+          .join("users_classes as uc", "uc.class_id", "c.id")
+          .join("users as u", "uc.user_id", "u.id")
+          .select("c.name")
+          .orderBy("c.id");
+
+        expect(dbUserList).toHaveLength(0);
+        expect(secondRes.status).toBe(406);
+      });
+
+      it("receives 'Please enter all required fields to add the class.' in res.body when adding a new class to the user's class list without the required elements", async () => {
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/classes")
+          .send({
+            description: "Learning to safeguard ",
+          })
+          .set({ authorization: token });
+
+        const dbUserList = await db("classes as c")
+          .join("users_classes as uc", "uc.class_id", "c.id")
+          .join("users as u", "uc.user_id", "u.id")
+          .select("c.name")
+          .orderBy("c.id");
+
+        expect(dbUserList).toHaveLength(0);
+        expect(secondRes.body.message).toBe(
+          "Please enter all required fields to add the class.",
+        );
+      });
     });
 
     //add student to current user's student list
-    describe("POST /user/students", () => {
-      it.todo("");
+    describe("POST /users/students", () => {
+      it("sends 201 OK when adding a new student to the user's list", async () => {
+        await db("classes").insert({ name: "CS" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        await db("users_classes").insert({ user_id: 1, class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/students")
+          .send({ name: "Frodo", class_id: 1 })
+          .set({ authorization: token });
+
+        expect(secondRes.status).toBe(201);
+      });
+
+      it("sends 'Success' message in res.body when adding a new student to the user's list", async () => {
+        await db("classes").insert({ name: "CS" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        await db("users_classes").insert({ user_id: 1, class_id: 1 });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/users/students")
+          .send({ name: "Frodo", class_id: 1 })
+          .set({ authorization: token });
+
+        expect(secondRes.body.message).toBe("Success");
+      });
+
+      it("Successfully adds a new student to the user's list", async () => {
+        await db("classes").insert({ name: "CS" });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        await db("users_classes").insert({ user_id: 1, class_id: 1 });
+
+        const exp = [{ name: "Frodo" }, { name: "Merry" }];
+
+        const token = firstRes.body.token;
+
+        await supertest(server)
+          .post("/users/students")
+          .send({ name: "Frodo", class_id: 1 })
+          .set({ authorization: token });
+
+        await supertest(server)
+          .post("/users/students")
+          .send({ name: "Merry", class_id: 1 })
+          .set({ authorization: token });
+
+        const dbStudentList = await db("students as s")
+          .join("users as u", 1, 1)
+          .select("s.name")
+          .orderBy("s.id");
+
+        expect(dbStudentList).toEqual(exp);
+      });
     });
 
     //add task for particular student
     describe("POST /students/:id/tasks", () => {
-      it.todo("");
+      it("adds a task to a particular students empty task list ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        const expTask = [
+          {
+            task: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            name: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        const dbTaskList = await db("student_tasks as st")
+          .join("tasks as t", "st.task_id", "t.id")
+          .join("students as s", "st.student_id", "s.id")
+          .select(
+            "t.name as task",
+            "t.description",
+            "t.due_date",
+            "t.completed",
+            "s.name as student",
+          )
+          .orderBy("s.id");
+
+        expect(dbTaskList).toEqual(expTask);
+      });
+
+      it("sends a success message 'Added a task' when adding a task to a particular students empty task list ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        const expTask = [
+          {
+            task: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            name: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        const dbTaskList = await db("student_tasks as st")
+          .join("tasks as t", "st.task_id", "t.id")
+          .join("students as s", "st.student_id", "s.id")
+          .select(
+            "t.name as task",
+            "t.description",
+            "t.due_date",
+            "t.completed",
+            "s.name as student",
+          )
+          .orderBy("s.id");
+
+        expect(secondRes.body.message).toBe("Added a task");
+      });
+
+      it("adds a task to a particular students non-empty task list ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        await db("tasks").insert({
+          name: "to do list",
+          due_date: "Sept 1, 2020",
+        });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const expTask = [
+          {
+            task: "to do list",
+            description: null,
+            due_date: "Sept 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+          {
+            task: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            name: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        const dbTaskList = await db("student_tasks as st")
+          .join("tasks as t", "st.task_id", "t.id")
+          .join("students as s", "st.student_id", "s.id")
+          .select(
+            "t.name as task",
+            "t.description",
+            "t.due_date",
+            "t.completed",
+            "s.name as student",
+          )
+          .orderBy("s.id");
+
+        expect(dbTaskList).toEqual(expTask);
+      });
+
+      it("sends a success message 'Added a task' when adding a task to a particular students non-empty task list ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        await db("tasks").insert({
+          name: "to do list",
+          due_date: "Sept 1, 2020",
+        });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const expTask = [
+          {
+            task: "to do list",
+            description: null,
+            due_date: "Sept 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+          {
+            task: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            name: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        const dbTaskList = await db("student_tasks as st")
+          .join("tasks as t", "st.task_id", "t.id")
+          .join("students as s", "st.student_id", "s.id")
+          .select(
+            "t.name as task",
+            "t.description",
+            "t.due_date",
+            "t.completed",
+            "s.name as student",
+          )
+          .orderBy("s.id");
+
+        expect(secondRes.body.message).toBe("Added a task");
+      });
+
+      it("sends 201 OK when adding a task to a particular student", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        await db("tasks").insert({
+          name: "to do list",
+          due_date: "Sept 1, 2020",
+        });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const expTask = [
+          {
+            task: "to do list",
+            description: null,
+            due_date: "Sept 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+          {
+            task: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+            student: "wolf",
+          },
+        ];
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            name: "pick a thesis topic",
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        expect(secondRes.status).toBe(201);
+      });
+
+      it("sends 406 client error status when task is missing a required field (name) ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        await db("tasks").insert({
+          name: "to do list",
+          due_date: "Sept 1, 2020",
+        });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        expect(secondRes.status).toBe(406);
+      });
+
+      it("sends error message 'Please supply all required fields to add a task' when task is missing a required field (name) ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        await db("tasks").insert({
+          name: "to do list",
+          due_date: "Sept 1, 2020",
+        });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            description: "find a good topic to research",
+            due_date: "Oct 1, 2020",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        expect(secondRes.body.message).toBe(
+          "Please supply all required fields to add a task",
+        );
+      });
+
+      it("sends 406 client error status when task is missing a required field (due_date) ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        await db("tasks").insert({
+          name: "to do list",
+          due_date: "Sept 1, 2020",
+        });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            name: "to do",
+            description: "find a good topic to research",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        expect(secondRes.status).toBe(406);
+      });
+
+      it("sends error message 'Please supply all required fields to add a task' when task is missing a required field (due_date) ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        await db("tasks").insert({
+          name: "to do list",
+          due_date: "Sept 1, 2020",
+        });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            name: "to do",
+            description: "find a good topic to research",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        expect(secondRes.body.message).toBe(
+          "Please supply all required fields to add a task",
+        );
+      });
+
+      it("sends 406 client error status when task is missing required fields (name and due_date) ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        await db("tasks").insert({
+          name: "to do list",
+          due_date: "Sept 1, 2020",
+        });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            description: "find a good topic to research",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        expect(secondRes.status).toBe(406);
+      });
+
+      it("sends error message 'Please supply all required fields to add a task' when task is missing all required fields (name, due_date) ", async () => {
+        await db("students").insert({
+          name: "wolf",
+        });
+
+        await db("tasks").insert({
+          name: "to do list",
+          due_date: "Sept 1, 2020",
+        });
+
+        await db("student_tasks").insert({ student_id: 1, task_id: 1 });
+
+        const firstRes = await supertest(server).post("/auth/register").send({
+          username: "sam",
+          password: "pass",
+        });
+
+        const token = firstRes.body.token;
+
+        const secondRes = await supertest(server)
+          .post("/students/1/tasks")
+          .send({
+            name: "to do",
+            completed: 0,
+          })
+          .set({
+            authorization: token,
+          });
+
+        expect(secondRes.body.message).toBe(
+          "Please supply all required fields to add a task",
+        );
+      });
     });
   });
 

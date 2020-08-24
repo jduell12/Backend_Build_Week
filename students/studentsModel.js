@@ -6,6 +6,7 @@ module.exports = {
   editStudent,
   deleteStudent,
   getTasks,
+  addTasks,
 };
 
 //returns an array of all students in the database
@@ -15,7 +16,15 @@ function getStudents() {
 
 //adds a student to the database
 async function addStudent(student) {
-  return db("students").insert(student);
+  if (student.class_id) {
+    const id = await db("students").insert(student);
+    return db("student_classes").insert({
+      student_id: id,
+      class_id: student.class_id,
+    });
+  } else {
+    return db("students").insert(student);
+  }
 }
 
 //updates a student with the given id
@@ -40,4 +49,10 @@ async function getTasks(studentId) {
     .join("students as s", "s.id", "st.student_id")
     .select("t.name", "t.description", "t.due_date", "t.completed")
     .orderBy("t.id");
+}
+
+//adds a task to the student's task list
+async function addTasks(studentId, task) {
+  const taskId = await db("tasks").insert(task).returning("id");
+  return db("student_tasks").insert({ student_id: studentId, task_id: taskId });
 }
