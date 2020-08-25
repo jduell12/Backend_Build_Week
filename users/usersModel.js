@@ -88,6 +88,6 @@ async function getClasses(userId) {
     .join("users_classes as uc", "uc.class_id", "c.id")
     .join("users as u", "uc.user_id", "u.id")
     .where({ "u.id": userId })
-    .select("c.name")
+    .select("c.name", "c.id")
     .orderBy("c.id");
 }

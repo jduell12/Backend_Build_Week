@@ -159,11 +159,11 @@ describe("server", () => {
         expect(secondRes.status).toBe(200);
       });
 
-      it("returns class list of user from non-empty database", async () => {
+      it.only("returns class list of user from non-empty database", async () => {
         await db("classes").insert({ name: "CS" });
         await db("classes").insert({ name: "Psy" });
 
-        const exp = [{ name: "CS" }];
+        const exp = [{ name: "CS", id: 1 }];
 
         const firstRes = await supertest(server)
           .post("/auth/register")
@@ -172,7 +172,7 @@ describe("server", () => {
         const dbClasses = await db("classes as c")
           .join("users_classes as uc", "uc.class_id", "c.id")
           .join("users as u", "uc.user_id", "u.id")
-          .select("c.name")
+          .select("c.name", "c.id")
           .orderBy("c.id");
 
         const token = firstRes.body.token;

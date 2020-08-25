@@ -12,6 +12,7 @@ router.get("/", async (req, res) => {
 
   Users.getClasses(userNum)
     .then((classes) => {
+      console.log(classes);
       res.status(200).json({ data: classes });
     })
     .catch((err) => {

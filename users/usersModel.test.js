@@ -185,9 +185,9 @@ describe("usersModel", () => {
       await db("users_classes").insert({ class_id: 3, user_id: 1 });
 
       const expectedClasses = [
-        { name: "Computer Science" },
-        { name: "Theology" },
-        { name: "Psychology" },
+        { id: 1, name: "Computer Science" },
+        { id: 2, name: "Theology" },
+        { id: 3, name: "Psychology" },
       ];
 
       const classes = await Users.getClasses(1);
