@@ -1,5 +1,5 @@
 const pgConnection =
-  process.env.DATABSE_URL || "postgresql://postgres@localhost/users";
+  process.env.DATABASE_URL || "postgresql://postgres@localhost/prof";
 
 module.exports = {
   development: {
