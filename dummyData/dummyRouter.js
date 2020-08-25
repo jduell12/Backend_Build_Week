@@ -12,6 +12,7 @@ router.get("/classes", (req, res) => {
     { id: 1, name: "CS" },
     { id: 2, name: "Psy" },
     { id: 3, name: "Math" },
+    { id: 4, name: "Science" },
   ];
   res.status(200).json({ data: classes });
 });
