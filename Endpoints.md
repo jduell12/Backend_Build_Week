@@ -20,9 +20,9 @@ BASE_URL: https://better-professor-build-week.herokuapp.com/
 ## POST requests
 
 - add a new user and returns a JWT token
-  - BASE_URL/register
+  - BASE_URL/auth/register
 - logs in in a user and returns a JWT token
-  - BASE_URL/login
+  - BASE_URL/auth/login
 - add a new class to the user's class list
   - BASE_URL/users/classes
 - add a student to the user's student list
