@@ -21,14 +21,16 @@ function getUsers() {
 //adds a user to the database and returns the user's username
 async function addUser(user) {
   if (user.class_id) {
-    const userId = await db("users").insert(user, "id");
+    const userId = await db("users").insert(user).returning("id");
+
     await db("users_classes")
       .insert({
-        user_id: userId,
+        user_id: userId[0],
         class_id: user.class_id,
       })
       .returning("id");
-    return getUserById(userId);
+
+    return getUserById(userId[0]);
   } else {
     return db("users").insert(user, "id");
   }

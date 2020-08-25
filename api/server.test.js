@@ -679,10 +679,14 @@ describe("server", () => {
 
     //add a new class to user's class list
     describe("POST /users/classes", () => {
-      it.only("adds a new class to the user's class list", async () => {
+      it("adds a new class to the user's class list", async () => {
+        await db("classes").insert({ name: "Math" });
+        await db("users").insert({ username: "bill", password: "pass" });
+
         const firstRes = await supertest(server).post("/auth/register").send({
           username: "sam",
           password: "pass",
+          class_id: 1,
         });
 
         const token = firstRes.body.token;
@@ -707,9 +711,11 @@ describe("server", () => {
           .get("/classes")
           .set({ authorization: token });
 
-        console.log(fourthRes.body);
-
-        const exp = [{ name: "Security" }, { name: "Adventure" }];
+        const exp = [
+          { name: "Math" },
+          { name: "Security" },
+          { name: "Adventure" },
+        ];
 
         const dbUserList = await db("classes as c")
           .join("users_classes as uc", "uc.class_id", "c.id")
@@ -717,8 +723,8 @@ describe("server", () => {
           .select("c.name")
           .orderBy("c.id");
 
-        expect(dbUserList).toHaveLength(2);
-        expect(dbUserList).toEqual(expect.arrayContaining(exp));
+        expect(dbUserList).toHaveLength(3);
+        expect(dbUserList).toEqual(exp);
       });
 
       it("receives 201 OK when adding a new class to the user's class list", async () => {
