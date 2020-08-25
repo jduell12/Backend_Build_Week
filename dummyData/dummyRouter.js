@@ -18,7 +18,11 @@ router.get("/classes", (req, res) => {
 });
 
 router.get("/classes/1", (req, res) => {
-  const students = [{ name: "Neo" }, { name: "Trinity" }, { name: "Smith" }];
+  const students = [
+    { id: 1, name: "Neo" },
+    { id: 2, name: "Trinity" },
+    { id: 3, name: "Smith" },
+  ];
   res.status(200).json({ data: students });
 });
 
