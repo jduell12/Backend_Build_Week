@@ -1,8 +1,10 @@
 const router = require("express").Router();
+const db = require("../data/dbConfig");
 
-router.get("/users", (req, res) => {
+router.get("/users", async (req, res) => {
   const students = [{ name: "Neo" }, { name: "Trinity" }, { name: "Smith" }];
-  res.status(200).json({ data: students });
+  const dbStudents = await db("users");
+  res.status(200).json({ data: dbStudents });
 });
 
 router.get("/classes", (req, res) => {
