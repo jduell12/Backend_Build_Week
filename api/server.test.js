@@ -679,7 +679,7 @@ describe("server", () => {
 
     //add a new class to user's class list
     describe("POST /users/classes", () => {
-      it("adds a new class to the user's class list", async () => {
+      it.only("adds a new class to the user's class list", async () => {
         const firstRes = await supertest(server).post("/auth/register").send({
           username: "sam",
           password: "pass",
@@ -702,6 +702,12 @@ describe("server", () => {
             description: "Learning to safeguard ",
           })
           .set({ authorization: token });
+
+        const fourthRes = await supertest(server)
+          .get("/classes")
+          .set({ authorization: token });
+
+        console.log(fourthRes.body);
 
         const exp = [{ name: "Security" }, { name: "Adventure" }];
 

@@ -10,7 +10,7 @@ module.exports = {
 };
 
 //returns an array of all classes in database
-function getClasses() {
+async function getClasses() {
   return db("classes");
 }
 
