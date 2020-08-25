@@ -336,6 +336,222 @@
   },
   {
     "type": "delete",
+    "url": "/students/:studentId/tasks/:taskId",
+    "title": "Deletes a particular task for a particular student",
+    "group": "Student_Tasks",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "studentId",
+            "description": "<p>integer taken from url</p>"
+          },
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "taskId",
+            "description": "<p>integer taken from url</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": ""
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 ok\n{\n  \"message\": \"Deleted task Successfully\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"That task doesn't belong to that student\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./students/studentsRouter.js",
+    "groupTitle": "Student_Tasks",
+    "name": "DeleteStudentsStudentidTasksTaskid"
+  },
+  {
+    "type": "get",
+    "url": "/students/:studentId/tasks",
+    "title": "Get task list for particular student",
+    "group": "Student_Tasks",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Task objects</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "    HTTP 200 ok\n    {\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Determine a thesis\",\n            \"description\": \"Pick a topic to research\",\n            \"due_date\": \"Sep 1, 2020\",\n            \"completed\": 0\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "studentId",
+            "description": "<p>integer taken from url</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  data: []\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./students/studentsRouter.js",
+    "groupTitle": "Student_Tasks",
+    "name": "GetStudentsStudentidTasks"
+  },
+  {
+    "type": "post",
+    "url": "/students/:studentId/tasks",
+    "title": "Adds a task for a particular student",
+    "group": "Student_Tasks",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": ""
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 ok\n{\n  \"message\": \"Added a task\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "studentId",
+            "description": "<p>integer taken from url</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Please supply all required fields to add a task\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./students/studentsRouter.js",
+    "groupTitle": "Student_Tasks",
+    "name": "PostStudentsStudentidTasks"
+  },
+  {
+    "type": "put",
+    "url": "/students/:studentId/tasks/:taskId",
+    "title": "Edits a particular task for a particular student",
+    "group": "Student_Tasks",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "studentId",
+            "description": "<p>integer taken from url</p>"
+          },
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "taskId",
+            "description": "<p>integer taken from url</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": ""
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 ok\n{\n  \"message\": \"Edited task successfully\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Please provide information for the task\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./students/studentsRouter.js",
+    "groupTitle": "Student_Tasks",
+    "name": "PutStudentsStudentidTasksTaskid"
+  },
+  {
+    "type": "delete",
     "url": "/users",
     "title": "Deletes the user",
     "group": "Users",

@@ -2,8 +2,31 @@ const router = require("express").Router();
 const Students = require("./studentsModel");
 const helpers = require("./studentServices");
 
-const db = require("../data/dbConfig");
+/**
+ * @api {get} /students/:studentId/tasks Get task list for particular student 
+ * @apiGroup Student Tasks
+ * @apiSuccess {Array} data Task objects
+ * @apiParam studentId integer taken from url
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 ok
+    {
+    "data": [
+        {
+            "id": 1,
+            "name": "Determine a thesis",
+            "description": "Pick a topic to research",
+            "due_date": "Sep 1, 2020",
+            "completed": 0
+        }
+    ]
+}
 
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        data: []
+      }
+ */
 //gets task list for the student
 router.get("/:id/tasks", (req, res) => {
   Students.getTasks(req.params.id)
@@ -15,6 +38,23 @@ router.get("/:id/tasks", (req, res) => {
     });
 });
 
+/**
+ * @api {post} /students/:studentId/tasks Adds a task for a particular student
+ * @apiGroup Student Tasks
+ * @apiSuccess {String} message
+ * @apiParam studentId integer taken from url
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 ok
+    {
+      "message": "Added a task"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "Please supply all required fields to add a task"
+      }
+ */
 //adds a task to the task list for the student
 router.post("/:id/tasks", (req, res) => {
   if (helpers.validTask(req.body)) {
@@ -32,6 +72,25 @@ router.post("/:id/tasks", (req, res) => {
   }
 });
 
+/**
+ * @api {put} /students/:studentId/tasks/:taskId Edits a particular task for a particular student
+ * @apiGroup Student Tasks
+ * @apiParam studentId integer taken from url
+ * @apiParam taskId integer taken from url
+ * @apiSuccess {String} message
+ * 
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 ok
+    {
+      "message": "Edited task successfully"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "Please provide information for the task"
+      }
+ */
 //edits a task of the student
 router.put("/:id/tasks/:tid", async (req, res) => {
   if (helpers.validEditTask(req.body)) {
@@ -56,6 +115,25 @@ router.put("/:id/tasks/:tid", async (req, res) => {
   }
 });
 
+/**
+ * @api {delete} /students/:studentId/tasks/:taskId Deletes a particular task for a particular student
+ * @apiGroup Student Tasks
+ * @apiParam studentId integer taken from url
+ * @apiParam taskId integer taken from url
+ * @apiSuccess {String} message
+ * 
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 ok
+    {
+      "message": "Deleted task Successfully"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "That task doesn't belong to that student"
+      }
+ */
 //deletes a task of the student
 router.delete("/:id/tasks/:tid", async (req, res) => {
   const check = await helpers.validTaskId(req.params.tid);
