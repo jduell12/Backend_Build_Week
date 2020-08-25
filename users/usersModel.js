@@ -78,7 +78,7 @@ async function getUserByUsername(name) {
 async function getStudents(userId) {
   return db("students as s")
     .join("users as u", "s.class_id", "u.class_id")
-    .select("s.name")
+    .select("s.name", "s.id")
     .orderBy("s.id");
 }
 

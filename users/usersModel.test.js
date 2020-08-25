@@ -144,9 +144,9 @@ describe("usersModel", () => {
       });
 
       const expectedStudents = [
-        { name: "Neo" },
-        { name: "Trinity" },
-        { name: "Smith" },
+        { id: 1, name: "Neo" },
+        { id: 2, name: "Trinity" },
+        { id: 3, name: "Smith" },
       ];
 
       const studentList = await Users.getStudents(1);

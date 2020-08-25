@@ -18,7 +18,8 @@ router.get("/classes", (req, res) => {
 });
 
 router.get("/classes/1", (req, res) => {
-  res.status(200).json({ data: { name: "CS" } });
+  const students = [{ name: "Neo" }, { name: "Trinity" }, { name: "Smith" }];
+  res.status(200).json({ data: students });
 });
 
 router.get("/students/1/tasks", (req, res) => {
