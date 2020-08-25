@@ -1,6 +1,7 @@
 const supertest = require("supertest");
 const server = require("./server");
 const db = require("../data/dbConfig");
+const { first } = require("../data/dbConfig");
 
 describe("server", () => {
   //clear db tables before each test
@@ -29,7 +30,7 @@ describe("server", () => {
 
   describe("api GET requests", () => {
     //get student list of user ordered by classes
-    describe("GET /user", () => {
+    describe("GET /users", () => {
       it("returns 200 OK when getting empty student list of user", async () => {
         const firstRes = await supertest(server)
           .post("/auth/register")
@@ -500,9 +501,7 @@ describe("server", () => {
           password: "pass",
         });
 
-        const exp = { username: "sam" };
-
-        expect(res.body.data).toEqual(exp);
+        expect(res.body.token).not.toBeNull();
       });
 
       it("returns token when registered successfully", async () => {

@@ -21,13 +21,13 @@ router.post("/register", (req, res) => {
 
     //add user to database
     Users.addUser(user)
-      .then((user) => {
+      .then((returnedUser) => {
         const token = signToken(user);
         res.status(201).json({ token });
       })
       .catch((err) => {
         console.log(err);
-        res.status(500), json({ error: err.message });
+        res.status(500).json({ error: err.message });
       });
   } else {
     res.status(400).json({ message: "Please provide a username and password" });

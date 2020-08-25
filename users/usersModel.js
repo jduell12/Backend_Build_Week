@@ -21,16 +21,14 @@ function getUsers() {
 //adds a user to the database and returns the user's username
 async function addUser(user) {
   if (user.class_id) {
-    return db("users")
-      .insert(user, "id")
-      .then(async (id) => {
-        await db("users_classes")
-          .insert({
-            user_id: id,
-            class_id: user.class_id,
-          })
-          .returning("id");
-      });
+    const userId = await db("users").insert(user, "id");
+    await db("users_classes")
+      .insert({
+        user_id: userId,
+        class_id: user.class_id,
+      })
+      .returning("id");
+    return getUserById(userId);
   } else {
     return db("users").insert(user, "id");
   }
@@ -87,6 +85,7 @@ async function getClasses(userId) {
   return db("classes as c")
     .join("users_classes as uc", "uc.class_id", "c.id")
     .join("users as u", "uc.user_id", "u.id")
+    .where({ "u.id": userId })
     .select("c.name")
     .orderBy("c.id");
 }
