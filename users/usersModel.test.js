@@ -133,25 +133,33 @@ describe("usersModel", () => {
         { name: "Smith", class_id: 1 },
       ];
 
-      await db("classes").insert({ name: "Computer Science" });
+      await db("classes").insert({ name: "CS" });
       await db("users").insert({
         username: "morpheous",
         password: "blue",
         class_id: 1,
       });
+
+      await db("users_classes").insert({ class_id: 1, user_id: 1 });
+
       students.forEach(async (student) => {
         await db("students").insert(student);
       });
 
+      await db("student_classes").insert({ student_id: 1, class_id: 1 });
+      await db("student_classes").insert({ student_id: 2, class_id: 1 });
+      await db("student_classes").insert({ student_id: 3, class_id: 1 });
+
       const expectedStudents = [
-        { id: 1, name: "Neo" },
-        { id: 2, name: "Trinity" },
-        { id: 3, name: "Smith" },
+        { id: 1, name: "Neo", class: "CS", class_id: 1 },
+        { id: 2, name: "Trinity", class: "CS", class_id: 1 },
+        { id: 3, name: "Smith", class: "CS", class_id: 1 },
       ];
 
       const studentList = await Users.getStudents(1);
       expect(studentList).not.toBeNull();
-      expect(studentList).toEqual(expect.arrayContaining(expectedStudents));
+      console.log(studentList);
+      expect(studentList).toEqual(expectedStudents);
     });
 
     it("returns empty array when user has no students they are mentoring", async () => {

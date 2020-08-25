@@ -77,8 +77,10 @@ async function getUserByUsername(name) {
 //gets a list of students for a given user
 async function getStudents(userId) {
   return db("students as s")
-    .join("users as u", "s.class_id", "u.class_id")
-    .select("s.name", "s.id")
+    .join("student_classes as sc", "s.id", "sc.student_id")
+    .join("users_classes as u", "u.class_id", "sc.class_id")
+    .join("classes as c", "c.id", "sc.class_id")
+    .select("s.name", "s.id", "c.name as class", "c.id as class_id")
     .orderBy("s.id");
 }
 

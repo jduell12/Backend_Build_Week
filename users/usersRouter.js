@@ -4,9 +4,16 @@ const Classes = require("../classes/classesModel");
 const Students = require("../students/studentsModel");
 const helpers = require("./usersService");
 
+const db = require("../data/dbConfig");
+
 //gets list of students of current user
-router.get("/", (req, res) => {
-  Users.getStudents()
+router.get("/", async (req, res) => {
+  let userNum = "";
+  await Users.getUserByUsername(req.jwt.username).then((user) => {
+    return (userNum = user.id);
+  });
+
+  Users.getStudents(userNum)
     .then((students) => {
       res.status(200).json({ data: students });
     })
@@ -23,8 +30,9 @@ router.post("/classes", async (req, res) => {
 
       await Classes.addClass(req.body).then((id) => {
         classId = id;
-        return classId[0];
+        return classId;
       });
+      console.log(classId[0]);
 
       let userNum = "";
       await Users.getUserByUsername(req.jwt.username).then((user) => {

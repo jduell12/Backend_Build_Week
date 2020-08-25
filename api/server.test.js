@@ -86,15 +86,28 @@ describe("server", () => {
         await db("students").insert({ name: "Pippin", class_id: 1 });
         await db("students").insert({ name: "Merry", class_id: 1 });
 
+        await db("student_classes").insert({ student_id: 1, class_id: 1 });
+        await db("student_classes").insert({ student_id: 2, class_id: 1 });
+        await db("student_classes").insert({ student_id: 3, class_id: 1 });
+
         const exp = [
           {
+            id: 1,
             name: "Frodo",
+            class_id: 1,
+            class: "Security",
           },
           {
-            name: "Merry",
-          },
-          {
+            id: 2,
             name: "Pippin",
+            class_id: 1,
+            class: "Security",
+          },
+          {
+            id: 3,
+            name: "Merry",
+            class_id: 1,
+            class: "Security",
           },
         ];
 
@@ -108,7 +121,7 @@ describe("server", () => {
           authorization: token,
         });
 
-        expect(secondRes.body.data).toEqual(expect.arrayContaining(exp));
+        expect(secondRes.body.data).toEqual(exp);
       });
     });
 
@@ -159,7 +172,7 @@ describe("server", () => {
         expect(secondRes.status).toBe(200);
       });
 
-      it.only("returns class list of user from non-empty database", async () => {
+      it("returns class list of user from non-empty database", async () => {
         await db("classes").insert({ name: "CS" });
         await db("classes").insert({ name: "Psy" });
 
@@ -686,7 +699,6 @@ describe("server", () => {
         const firstRes = await supertest(server).post("/auth/register").send({
           username: "sam",
           password: "pass",
-          class_id: 1,
         });
 
         const token = firstRes.body.token;
@@ -712,18 +724,17 @@ describe("server", () => {
           .set({ authorization: token });
 
         const exp = [
-          { name: "Math" },
-          { name: "Security" },
-          { name: "Adventure" },
+          { id: 2, name: "Security" },
+          { id: 3, name: "Adventure" },
         ];
 
         const dbUserList = await db("classes as c")
           .join("users_classes as uc", "uc.class_id", "c.id")
           .join("users as u", "uc.user_id", "u.id")
-          .select("c.name")
+          .select("c.name", "c.id")
           .orderBy("c.id");
 
-        expect(dbUserList).toHaveLength(3);
+        expect(dbUserList).toHaveLength(2);
         expect(dbUserList).toEqual(exp);
       });
 
