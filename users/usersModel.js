@@ -81,7 +81,7 @@ async function getStudents(userId) {
     .join("users_classes as u", "u.class_id", "sc.class_id")
     .join("classes as c", "c.id", "sc.class_id")
     .select("s.name", "s.id", "c.name as class", "c.id as class_id")
-    .where("uc.user_id", userId)
+    .where("u.user_id", userId)
     .orderBy("s.id");
 }
 
