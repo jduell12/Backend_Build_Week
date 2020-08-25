@@ -8,7 +8,11 @@ router.get("/users", async (req, res) => {
 });
 
 router.get("/classes", (req, res) => {
-  const classes = [{ name: "CS" }, { name: "Psy" }, { name: "Math" }];
+  const classes = [
+    { id: 1, name: "CS" },
+    { id: 2, name: "Psy" },
+    { id: 3, name: "Math" },
+  ];
   res.status(200).json({ data: classes });
 });
 
