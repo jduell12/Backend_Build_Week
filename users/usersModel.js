@@ -24,18 +24,15 @@ async function addUser(user) {
     return db("users")
       .insert(user, "id")
       .then(async (id) => {
-        await db("users_classes").insert({
-          user_id: id,
-          class_id: user.class_id,
-        });
-        return db("users").where({ id }).select("users.username").first();
+        await db("users_classes")
+          .insert({
+            user_id: id,
+            class_id: user.class_id,
+          })
+          .returning("id");
       });
   } else {
-    return db("users")
-      .insert(user, "id")
-      .then((id) => {
-        return db("users").where({ id }).select("users.username").first();
-      });
+    return db("users").insert(user, "id");
   }
 }
 
