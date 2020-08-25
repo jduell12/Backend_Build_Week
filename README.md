@@ -1,5 +1,10 @@
 # Backend
 
+## API Documentation
+
+- A comprehensive list for endpoints, success and error outputs can be found at
+  https://backend-build-week.vercel.app/
+  
 ## Database
 
 - Development and testing are in sqlite3
