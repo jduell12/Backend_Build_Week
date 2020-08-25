@@ -22,7 +22,7 @@ function getUsers() {
 async function addUser(user) {
   if (user.class_id) {
     return db("users")
-      .insert(user)
+      .insert(user, "id")
       .then(async (id) => {
         await db("users_classes").insert({
           user_id: id,
@@ -32,7 +32,7 @@ async function addUser(user) {
       });
   } else {
     return db("users")
-      .insert(user)
+      .insert(user, "id")
       .then((id) => {
         return db("users").where({ id }).select("users.username").first();
       });
