@@ -44,6 +44,7 @@ async function getStudents(classId) {
   return db("students as s")
     .join("student_classes as sc", "sc.student_id", "s.id")
     .join("classes as c", "sc.class_id", "c.id")
-    .select("s.name")
+    .select("s.name", "s.id", "c.name as class", "c.id as class_id")
+    .where({ "c.id": classId })
     .orderBy("s.id");
 }
