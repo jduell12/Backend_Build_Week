@@ -6,6 +6,49 @@ const helpers = require("./usersService");
 
 const db = require("../data/dbConfig");
 
+/**
+ * @api {get} /users Get student list of current user
+ * @apiGroup Users
+ * @apiSuccess {Array} data Student objects
+ * 
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 ok
+    {
+       "data": [
+        {
+            "id": 1,
+            "username": "morpheous",
+            "password": "pass",
+            "class_id": 1
+        },
+        {
+            "id": 3,
+            "username": "sammy",
+            "password": "$2a$12$O1HL5IgglOwnkrLElF7rguxCIx3BeY2uDsUQJT.Vnr.9L/DMRMgBO",
+            "class_id": 1
+        },
+        {
+            "id": 4,
+            "username": "merry",
+            "password": "$2a$08$pC/D/yh8pICeEozfWRW2weJlp.tREqKNbGd8uoS7QJ7in4Y6ZGniy",
+            "class_id": 1
+        },
+        {
+            "id": 5,
+            "username": "merryPippin",
+            "password": "$2a$08$TjS.2aIuu0.eOjcxCvWhwewoPAPiJq9.IkU7hzjAtpVXoYkPvyRe6",
+            "class_id": 1
+        }
+    ]
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 500 INTERNAL SERVER ERROR
+      {
+        "error": "error message goes here"
+      }
+ */
+
 //gets list of students of current user
 router.get("/", async (req, res) => {
   let userNum = "";
@@ -21,6 +64,25 @@ router.get("/", async (req, res) => {
       res.status(500).json({ error: err.message });
     });
 });
+
+/**
+ * @api {post} /users/classes Add a class that the user is teaching
+ * @apiGroup Users
+ * @apiParam name string
+ * @apiSuccess {String} message 
+ * 
+ * @apiSuccessExample Success-Response: 
+    HTTP 201 Created
+    {
+      "message": "Success"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "Please enter all required fields to add the class."
+      }
+ */
 
 //adds class to user's class list
 router.post("/classes", async (req, res) => {
@@ -41,7 +103,7 @@ router.post("/classes", async (req, res) => {
 
       Users.addClassUserList(userNum, classId[0])
         .then((resp) => {
-          res.status(201).json({ data: "Success" });
+          res.status(201).json({ message: "Success" });
         })
         .catch((err) => {
           res.status(500).json({
@@ -59,6 +121,25 @@ router.post("/classes", async (req, res) => {
   }
 });
 
+/**
+ * @api {post} /users/students Add a student to the user's student list
+ * @apiGroup Users
+ * @apiParam name string
+ * @apiParam class_id integer
+ * @apiSuccess {String} message
+ * 
+ * @apiSuccessExample Success-Response: 
+    HTTP 201 Created
+    {
+      "message": "Success"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "Please enter all required fields to add the student."
+      }
+ */
 //adds student to user's student list
 router.post("/students", async (req, res) => {
   if (req.body) {
@@ -92,6 +173,26 @@ router.post("/students", async (req, res) => {
   }
 });
 
+/**
+ * @api {put} /users/students/:studentId Edit a student in the user's student list
+ * @apiGroup Users
+ * @apiParam name string
+ * @apiParam class_id integer Class id of new class
+ * @apiParam prevClassId integer Class id of current class - used when changing students to a different class in conjunction with class_id
+ * @apiSuccess {String} message
+ * 
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 OK
+    {
+      "message": "Edited student successfully"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+         "message": "Please provide a name for the student or the current class id and previous class id"
+      }
+ */
 //edits a student in the user's student list
 router.put("/students/:id", (req, res) => {
   if (helpers.editStudentValid(req.body)) {
@@ -110,6 +211,24 @@ router.put("/students/:id", (req, res) => {
   }
 });
 
+/**
+ * @api {delete} /users Deletes the user
+ * @apiGroup Users
+ * @apiParam userId integer taken from url
+ * @apiSuccess {String} message
+ * 
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 OK
+    {
+      "message": "Deleted user Successfully"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "A user with that id doesn't exist"
+      }
+ */
 //deletes a user from db
 router.delete("/", async (req, res) => {
   let userNum = "";
@@ -132,6 +251,24 @@ router.delete("/", async (req, res) => {
   }
 });
 
+/**
+ * @api {delete} /users/students/:studentId Delete a student in the user's student list
+ * @apiGroup Users
+ * @apiParam studentId integer taken from url
+ * @apiSuccess {String} message
+ * 
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 OK
+    {
+      "message": "Deleted student Successfully"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "A student with that id doesn't exist"
+      }
+ */
 //deletes a student in the user's student list
 router.delete("/students/:id", async (req, res) => {
   const check = await helpers.checkStudent(req.params.id);

@@ -8,6 +8,27 @@ const constants = require("../config/constants");
 const helpers = require("./helpers");
 const { signToken } = require("./helpers");
 
+/**
+  @api {post} /auth/register Add a new user
+  @apiGroup Auth
+  @apiName Register
+  @apiParam username string
+  @apiParam password string
+
+  @apiSuccess 201 Jason web token 
+
+  @apiSuccessExample Success-Response: 
+    HTTP/1.1 201 ok
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1lcnJ5IiwiaWF0IjoxNTk4MzkxNDc5LCJleHAiOjE1OTgzOTUwNzl9.N2fRATukOGX1lmiC9nlUZUegWnQ5ro0cuBWSpURbg_c"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP/1.1 406 BAD REQUEST
+      {
+        "message": "Please provide a username and password"
+      }
+*/
 router.post("/register", (req, res) => {
   const user = req.body;
 
@@ -34,6 +55,27 @@ router.post("/register", (req, res) => {
   }
 });
 
+/**
+  @api {post} /auth/login Login a user
+  @apiGroup Auth
+  @apiName Login
+  @apiParam username string
+  @apiParam password string
+
+  @apiSuccess 201 Jason web token 
+
+  @apiSuccessExample Success-Response: 
+    HTTP/1.1 201 ok
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1lcnJ5IiwiaWF0IjoxNTk4MzkxNDc5LCJleHAiOjE1OTgzOTUwNzl9.N2fRATukOGX1lmiC9nlUZUegWnQ5ro0cuBWSpURbg_c"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP/1.1 406 BAD REQUEST
+      {
+        "message": "Please provide a username and password"
+      }
+*/
 router.post("/login", (req, res) => {
   if (loginValid(req.body)) {
     const { username, password } = req.body;
