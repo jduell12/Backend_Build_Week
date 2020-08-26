@@ -15,7 +15,7 @@ const { signToken } = require("./helpers");
   @apiParam username string
   @apiParam password string
 
-  @apiSuccess 201 Jason web token 
+  @apiSuccess 201 Json web token 
 
   @apiSuccessExample Success-Response: 
     HTTP/1.1 201 ok
@@ -62,7 +62,7 @@ router.post("/register", (req, res) => {
   @apiParam username string
   @apiParam password string
 
-  @apiSuccess 201 Jason web token 
+  @apiSuccess 201 Json web token 
 
   @apiSuccessExample Success-Response: 
     HTTP/1.1 201 ok
