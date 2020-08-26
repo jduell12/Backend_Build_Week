@@ -23,8 +23,8 @@
     "url": "",
     "version": "0.0.0",
     "filename": "./docs/main.js",
-    "group": "/Users/jess/Desktop/Lambda/bw-betterProf/Backend/docs/main.js",
-    "groupTitle": "/Users/jess/Desktop/Lambda/bw-betterProf/Backend/docs/main.js",
+    "group": "/Users/jess/Desktop/Lambda/bw-betterProf/apiDocs/docs/main.js",
+    "groupTitle": "/Users/jess/Desktop/Lambda/bw-betterProf/apiDocs/docs/main.js",
     "name": ""
   },
   {
@@ -58,7 +58,7 @@
             "group": "Success 200",
             "optional": false,
             "field": "201",
-            "description": "<p>Jason web token</p>"
+            "description": "<p>Json web token</p>"
           }
         ]
       },
@@ -114,7 +114,7 @@
             "group": "Success 200",
             "optional": false,
             "field": "201",
-            "description": "<p>Jason web token</p>"
+            "description": "<p>Json web token</p>"
           }
         ]
       },
@@ -281,6 +281,57 @@
     "filename": "./classes/classesRouter.js",
     "groupTitle": "Classes",
     "name": "GetClassesClassid"
+  },
+  {
+    "type": "post",
+    "url": "/users/classes",
+    "title": "Add a class that the user is teaching",
+    "group": "Classes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "name",
+            "description": "<p>string</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": ""
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 201 Created\n{\n  \"message\": \"Success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Please enter all required fields to add the class.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./users/usersRouter.js",
+    "groupTitle": "Classes",
+    "name": "PostUsersClasses"
   },
   {
     "type": "put",
@@ -552,60 +603,9 @@
   },
   {
     "type": "delete",
-    "url": "/users",
-    "title": "Deletes the user",
-    "group": "Users",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "optional": false,
-            "field": "userId",
-            "description": "<p>integer taken from url</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": ""
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response: ",
-          "content": "HTTP 200 OK\n{\n  \"message\": \"Deleted user Successfully\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"A user with that id doesn't exist\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./users/usersRouter.js",
-    "groupTitle": "Users",
-    "name": "DeleteUsers"
-  },
-  {
-    "type": "delete",
     "url": "/users/students/:studentId",
     "title": "Delete a student in the user's student list",
-    "group": "Users",
+    "group": "Students",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -649,104 +649,14 @@
     },
     "version": "0.0.0",
     "filename": "./users/usersRouter.js",
-    "groupTitle": "Users",
+    "groupTitle": "Students",
     "name": "DeleteUsersStudentsStudentid"
-  },
-  {
-    "type": "get",
-    "url": "/users",
-    "title": "Get student list of current user",
-    "group": "Users",
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "data",
-            "description": "<p>Student objects</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response: ",
-          "content": "HTTP 200 ok\n{\n   \"data\": [\n    {\n        \"id\": 1,\n        \"username\": \"morpheous\",\n        \"password\": \"pass\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 3,\n        \"username\": \"sammy\",\n        \"password\": \"$2a$12$O1HL5IgglOwnkrLElF7rguxCIx3BeY2uDsUQJT.Vnr.9L/DMRMgBO\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 4,\n        \"username\": \"merry\",\n        \"password\": \"$2a$08$pC/D/yh8pICeEozfWRW2weJlp.tREqKNbGd8uoS7QJ7in4Y6ZGniy\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 5,\n        \"username\": \"merryPippin\",\n        \"password\": \"$2a$08$TjS.2aIuu0.eOjcxCvWhwewoPAPiJq9.IkU7hzjAtpVXoYkPvyRe6\",\n        \"class_id\": 1\n    }\n]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP 500 INTERNAL SERVER ERROR\n{\n  \"error\": \"error message goes here\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./users/usersRouter.js",
-    "groupTitle": "Users",
-    "name": "GetUsers"
-  },
-  {
-    "type": "post",
-    "url": "/users/classes",
-    "title": "Add a class that the user is teaching",
-    "group": "Users",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "optional": false,
-            "field": "name",
-            "description": "<p>string</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": ""
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response: ",
-          "content": "HTTP 201 Created\n{\n  \"message\": \"Success\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Please enter all required fields to add the class.\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./users/usersRouter.js",
-    "groupTitle": "Users",
-    "name": "PostUsersClasses"
   },
   {
     "type": "post",
     "url": "/users/students",
     "title": "Add a student to the user's student list",
-    "group": "Users",
+    "group": "Students",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -796,14 +706,14 @@
     },
     "version": "0.0.0",
     "filename": "./users/usersRouter.js",
-    "groupTitle": "Users",
+    "groupTitle": "Students",
     "name": "PostUsersStudents"
   },
   {
     "type": "put",
     "url": "/users/students/:studentId",
     "title": "Edit a student in the user's student list",
-    "group": "Users",
+    "group": "Students",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -859,7 +769,97 @@
     },
     "version": "0.0.0",
     "filename": "./users/usersRouter.js",
-    "groupTitle": "Users",
+    "groupTitle": "Students",
     "name": "PutUsersStudentsStudentid"
+  },
+  {
+    "type": "delete",
+    "url": "/users",
+    "title": "Deletes the user",
+    "group": "Users",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>integer taken from url</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": ""
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 OK\n{\n  \"message\": \"Deleted user Successfully\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"A user with that id doesn't exist\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./users/usersRouter.js",
+    "groupTitle": "Users",
+    "name": "DeleteUsers"
+  },
+  {
+    "type": "get",
+    "url": "/users",
+    "title": "Get student list of current user",
+    "group": "Users",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Student objects</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 ok\n{\n   \"data\": [\n    {\n        \"id\": 1,\n        \"username\": \"morpheous\",\n        \"password\": \"pass\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 3,\n        \"username\": \"sammy\",\n        \"password\": \"$2a$12$O1HL5IgglOwnkrLElF7rguxCIx3BeY2uDsUQJT.Vnr.9L/DMRMgBO\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 4,\n        \"username\": \"merry\",\n        \"password\": \"$2a$08$pC/D/yh8pICeEozfWRW2weJlp.tREqKNbGd8uoS7QJ7in4Y6ZGniy\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 5,\n        \"username\": \"merryPippin\",\n        \"password\": \"$2a$08$TjS.2aIuu0.eOjcxCvWhwewoPAPiJq9.IkU7hzjAtpVXoYkPvyRe6\",\n        \"class_id\": 1\n    }\n]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 500 INTERNAL SERVER ERROR\n{\n  \"error\": \"error message goes here\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./users/usersRouter.js",
+    "groupTitle": "Users",
+    "name": "GetUsers"
   }
 ]
