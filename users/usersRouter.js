@@ -8,7 +8,7 @@ const db = require("../data/dbConfig");
 
 /**
  * @api {get} /users Get student list of current user
- * @apiGroup Users
+ * @apiGroup Students
  * @apiSuccess {Array} data Student objects
  * 
  * @apiSuccessExample Success-Response: 

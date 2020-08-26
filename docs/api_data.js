@@ -653,6 +653,45 @@ define({ "api": [
     "name": "DeleteUsersStudentsStudentid"
   },
   {
+    "type": "get",
+    "url": "/users",
+    "title": "Get student list of current user",
+    "group": "Students",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Student objects</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 ok\n{\n   \"data\": [\n    {\n        \"id\": 1,\n        \"username\": \"morpheous\",\n        \"password\": \"pass\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 3,\n        \"username\": \"sammy\",\n        \"password\": \"$2a$12$O1HL5IgglOwnkrLElF7rguxCIx3BeY2uDsUQJT.Vnr.9L/DMRMgBO\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 4,\n        \"username\": \"merry\",\n        \"password\": \"$2a$08$pC/D/yh8pICeEozfWRW2weJlp.tREqKNbGd8uoS7QJ7in4Y6ZGniy\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 5,\n        \"username\": \"merryPippin\",\n        \"password\": \"$2a$08$TjS.2aIuu0.eOjcxCvWhwewoPAPiJq9.IkU7hzjAtpVXoYkPvyRe6\",\n        \"class_id\": 1\n    }\n]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 500 INTERNAL SERVER ERROR\n{\n  \"error\": \"error message goes here\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./users/usersRouter.js",
+    "groupTitle": "Students",
+    "name": "GetUsers"
+  },
+  {
     "type": "post",
     "url": "/users/students",
     "title": "Add a student to the user's student list",
@@ -822,44 +861,5 @@ define({ "api": [
     "filename": "./users/usersRouter.js",
     "groupTitle": "Users",
     "name": "DeleteUsers"
-  },
-  {
-    "type": "get",
-    "url": "/users",
-    "title": "Get student list of current user",
-    "group": "Users",
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "data",
-            "description": "<p>Student objects</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response: ",
-          "content": "HTTP 200 ok\n{\n   \"data\": [\n    {\n        \"id\": 1,\n        \"username\": \"morpheous\",\n        \"password\": \"pass\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 3,\n        \"username\": \"sammy\",\n        \"password\": \"$2a$12$O1HL5IgglOwnkrLElF7rguxCIx3BeY2uDsUQJT.Vnr.9L/DMRMgBO\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 4,\n        \"username\": \"merry\",\n        \"password\": \"$2a$08$pC/D/yh8pICeEozfWRW2weJlp.tREqKNbGd8uoS7QJ7in4Y6ZGniy\",\n        \"class_id\": 1\n    },\n    {\n        \"id\": 5,\n        \"username\": \"merryPippin\",\n        \"password\": \"$2a$08$TjS.2aIuu0.eOjcxCvWhwewoPAPiJq9.IkU7hzjAtpVXoYkPvyRe6\",\n        \"class_id\": 1\n    }\n]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP 500 INTERNAL SERVER ERROR\n{\n  \"error\": \"error message goes here\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./users/usersRouter.js",
-    "groupTitle": "Users",
-    "name": "GetUsers"
   }
 ] });
