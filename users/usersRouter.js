@@ -130,7 +130,8 @@ router.post("/classes", async (req, res) => {
  * @apiSuccessExample Success-Response: 
     HTTP 201 Created
     {
-      "message": "Success"
+      "message": "Success",
+      "newStudent": 2
     }
 
     @apiErrorExample Error-Response:

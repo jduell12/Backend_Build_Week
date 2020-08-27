@@ -993,7 +993,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response: ",
-          "content": "HTTP 201 Created\n{\n  \"message\": \"Success\"\n}",
+          "content": "HTTP 201 Created\n{\n  \"message\": \"Success\",\n  \"newStudent\": 2\n}",
           "type": "json"
         }
       ]
