@@ -197,7 +197,7 @@ router.put("/:id", (req, res) => {
  * @apiSuccessExample Success-Response: 
     HTTP 200 ok
     {
-      "message": "Success"
+      "message": "Success"P
     }
 
     @apiErrorExample Error-Response:
@@ -268,13 +268,23 @@ router.delete("/:id", async (req, res) => {
  * @apiSuccessExample Success-Response: 
     HTTP 200 ok
     {
-      "message": "Class deleted Successfully"
+      "message": "Task deleted Successfully"
     }
 
     @apiErrorExample Error-Response:
       HTTP 406 Not Acceptable
       {
-        "message": "Class with that id doesn't exist"
+        "message": "A task with that id doesn't exist for that class"
+      }
+      @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "A task with that id doesn't exist"
+      }
+      @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "Class with that id doesn't exit"
       }
  */
 //deletes a class with the particular id

@@ -159,7 +159,7 @@
       "examples": [
         {
           "title": "Success-Response: ",
-          "content": "HTTP 200 ok\n{\n  \"message\": \"Class deleted Successfully\"\n}",
+          "content": "HTTP 200 ok\n{\n  \"message\": \"Task deleted Successfully\"\n}",
           "type": "json"
         }
       ]
@@ -181,7 +181,17 @@
       "examples": [
         {
           "title": "Error-Response:",
-          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Class with that id doesn't exist\"\n}",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"A task with that id doesn't exist for that class\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"A task with that id doesn't exist\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Class with that id doesn't exit\"\n}",
           "type": "json"
         }
       ]
@@ -320,7 +330,7 @@
       "examples": [
         {
           "title": "Success-Response: ",
-          "content": "HTTP 200 ok\n{\n  \"message\": \"Success\"\n}",
+          "content": "HTTP 200 ok\n{\n  \"message\": \"Success\"P\n}",
           "type": "json"
         }
       ]
