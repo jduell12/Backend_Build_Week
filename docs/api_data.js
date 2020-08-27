@@ -263,7 +263,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response: ",
-          "content": "HTTP 200 ok\n{\n  data: \n}",
+          "content": "HTTP 200 ok\n{\n  data: { task: \"to do\", id: 1 },\n      { task: \"to do3\", id: 3 },\n}",
           "type": "json"
         }
       ]

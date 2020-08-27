@@ -118,7 +118,8 @@ router.get("/:id/tasks", (req, res) => {
  * @apiSuccessExample Success-Response: 
     HTTP 200 ok
     {
-      data: 
+      data: { task: "to do", id: 1 },
+          { task: "to do3", id: 3 },
     }
 
     @apiErrorExample Error-Response:
