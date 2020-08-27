@@ -1,7 +1,9 @@
 const router = require("express").Router();
 const Classes = require("./classesModel");
+const Students = require("../students/studentsModel");
 const Users = require("../users/usersModel");
 const helpers = require("./classesService");
+const taskHelpers = require("../students/studentServices");
 
 /**
  * @api {get} /classes Get class list of current user
@@ -34,7 +36,6 @@ router.get("/", async (req, res) => {
 
   Users.getClasses(userNum)
     .then((classes) => {
-      console.log(classes);
       res.status(200).json({ data: classes });
     })
     .catch((err) => {
@@ -76,6 +77,82 @@ router.get("/:id", (req, res) => {
       res.status(500).json({ error: err.message });
     });
 });
+/**
+ * @api {get} /classes/:classId/tasks Get task list for particular class
+ * @apiGroup Class Tasks
+ * @apiSuccess {Array} data Task objects
+ * @apiParam {Integer} classId Taken from url
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 ok
+    {
+      "data": [
+          {
+             "task": 'A task to do',
+             "id: 1
+          }
+      ]
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "data": []"
+      }
+ */
+//gets a task list for a particular class
+router.get("/:id/tasks", (req, res) => {
+  Classes.getClassTasks(req.params.id)
+    .then((tasks) => {
+      res.status(200).json({ data: tasks });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err.message });
+    });
+});
+
+/**
+ * @api {post} /classes/:classId/tasks Adds a task to a particular class
+ * @apiGroup Class Tasks
+ * @apiSuccess {String} message 
+ * @apiParam {Integer} classId Taken from url
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 ok
+    {
+      data: 
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "No class with that id exists"
+      }
+      @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "Please provide a name and due date for the task"
+      }
+ */
+//adds a task to a particular class
+router.post("/:id/tasks", (req, res) => {
+  const classId = req.params.id;
+  const task = req.body;
+
+  if (helpers.checkClass(classId)) {
+    if (taskHelpers.validTask(task)) {
+      Classes.addClassTasks(classId, task)
+        .then((tasks) => {
+          res.status(201).json({ data: tasks });
+        })
+        .catch((err) => res.status(500).json({ error: err.message }));
+    } else {
+      res
+        .status(406)
+        .json({ message: "Please provide a name and due date to add a task" });
+    }
+  } else {
+    res.status(406).json({ message: "No class with that id exists" });
+  }
+});
 
 /**
  * @api {put} /classes/:classId Edits the information for a class
@@ -106,6 +183,44 @@ router.put("/:id", (req, res) => {
       });
   } else {
     res.status(406).json({ message: "Please provide a name for the class" });
+  }
+});
+
+/**
+ * @api {put} /classes/:classId/tasks Edits the information for a task in a particular class
+ * @apiGroup Class Tasks
+ * @apiSuccess {String} message 
+ * @apiParam {Integer} classId Taken from url
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 ok
+    {
+      "message": "Success"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "Please provide a name and due date for the task"
+      }
+ */
+//edits the task information for a particular task in a particular class
+router.put("/tasks/:id", (req, res) => {
+  const task = req.body;
+  if (
+    taskHelpers.validEditTask(task) &&
+    taskHelpers.validTaskId(req.params.id)
+  ) {
+    Students.editTask(req.params.id, task)
+      .then((count) => {
+        res.status(200).json({ message: "Success" });
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err.message });
+      });
+  } else {
+    res
+      .status(406)
+      .json({ message: "Please provide information for the task" });
   }
 });
 
@@ -142,4 +257,56 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+/**
+ * @api {delete} /classes/:classId/tasks/:taskId Deletes a task of a particular class
+ * @apiGroup Class Tasks
+ * @apiSuccess {String} message 
+ * @apiParam {Integer} classId Taken from url
+ * @apiSuccessExample Success-Response: 
+    HTTP 200 ok
+    {
+      "message": "Class deleted Successfully"
+    }
+
+    @apiErrorExample Error-Response:
+      HTTP 406 Not Acceptable
+      {
+        "message": "Class with that id doesn't exist"
+      }
+ */
+//deletes a class with the particular id
+//deletes a particular task from a particular class
+router.delete("/:id/tasks/:tid", async (req, res) => {
+  const classId = req.params.id;
+  const taskId = parseInt(req.params.tid);
+
+  if (helpers.checkClass(classId)) {
+    if (taskHelpers.validTaskId(taskId)) {
+      const taskList = await Classes.getClassTasks(classId);
+
+      let hasTask = false;
+      taskList.forEach((task) => {
+        if (task.id === taskId) {
+          hasTask = true;
+        }
+      });
+
+      if (hasTask) {
+        Students.deleteTask(taskId)
+          .then((count) => {
+            res.status(200).json({ message: "Deleted task Successfully" });
+          })
+          .catch((err) => res.status(500).json({ error: err.message }));
+      } else {
+        res.status(406).json({
+          message: "A task with that id doesn't exist for that class",
+        });
+      }
+    } else {
+      res.status(406).json({ message: "A task with that id doesn't exist " });
+    }
+  } else {
+    res.status(406).json({ message: "Class with that id doesn't exit" });
+  }
+});
 module.exports = router;

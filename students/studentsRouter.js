@@ -98,7 +98,7 @@ router.put("/:id/tasks/:tid", async (req, res) => {
     if (check.length !== 0) {
       const { name, description, due_date, completed } = req.body;
       const editTask = { name, description, due_date, completed };
-      Students.editTask(req.params.id, req.params.tid, editTask)
+      Students.editTask(req.params.tid, editTask)
         .then((count) => {
           res.status(200).json({ message: "Edited task successfully" });
         })

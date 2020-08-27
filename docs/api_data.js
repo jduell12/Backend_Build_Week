@@ -141,6 +141,219 @@ define({ "api": [
   },
   {
     "type": "delete",
+    "url": "/classes/:classId/tasks/:taskId",
+    "title": "Deletes a task of a particular class",
+    "group": "Class_Tasks",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": ""
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 ok\n{\n  \"message\": \"Class deleted Successfully\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Integer",
+            "optional": false,
+            "field": "classId",
+            "description": "<p>Taken from url</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Class with that id doesn't exist\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./classes/classesRouter.js",
+    "groupTitle": "Class_Tasks",
+    "name": "DeleteClassesClassidTasksTaskid"
+  },
+  {
+    "type": "get",
+    "url": "/classes/:classId/tasks",
+    "title": "Get task list for particular class",
+    "group": "Class_Tasks",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Task objects</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 ok\n{\n  \"data\": [\n      {\n         \"task\": 'A task to do',\n         \"id: 1\n      }\n  ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Integer",
+            "optional": false,
+            "field": "classId",
+            "description": "<p>Taken from url</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"data\": []\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./classes/classesRouter.js",
+    "groupTitle": "Class_Tasks",
+    "name": "GetClassesClassidTasks"
+  },
+  {
+    "type": "post",
+    "url": "/classes/:classId/tasks",
+    "title": "Adds a task to a particular class",
+    "group": "Class_Tasks",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": ""
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 ok\n{\n  data: \n}",
+          "type": "json"
+        }
+      ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Integer",
+            "optional": false,
+            "field": "classId",
+            "description": "<p>Taken from url</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"No class with that id exists\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Please provide a name and due date for the task\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./classes/classesRouter.js",
+    "groupTitle": "Class_Tasks",
+    "name": "PostClassesClassidTasks"
+  },
+  {
+    "type": "put",
+    "url": "/classes/:classId/tasks",
+    "title": "Edits the information for a task in a particular class",
+    "group": "Class_Tasks",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": ""
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 ok\n{\n  \"message\": \"Success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Integer",
+            "optional": false,
+            "field": "classId",
+            "description": "<p>Taken from url</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Please provide a name and due date for the task\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./classes/classesRouter.js",
+    "groupTitle": "Class_Tasks",
+    "name": "PutClassesClassidTasks"
+  },
+  {
+    "type": "delete",
     "url": "/classes/:classId",
     "title": "Deletes a class",
     "group": "Classes",
@@ -281,57 +494,6 @@ define({ "api": [
     "filename": "./classes/classesRouter.js",
     "groupTitle": "Classes",
     "name": "GetClassesClassid"
-  },
-  {
-    "type": "post",
-    "url": "/users/classes",
-    "title": "Add a class that the user is teaching",
-    "group": "Classes",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "optional": false,
-            "field": "name",
-            "description": "<p>string</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": ""
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response: ",
-          "content": "HTTP 201 Created\n{\n  \"message\": \"Success\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Please enter all required fields to add the class.\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./users/usersRouter.js",
-    "groupTitle": "Classes",
-    "name": "PostUsersClasses"
   },
   {
     "type": "put",
@@ -603,9 +765,60 @@ define({ "api": [
   },
   {
     "type": "delete",
+    "url": "/users",
+    "title": "Deletes the user",
+    "group": "Users",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>integer taken from url</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": ""
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 200 OK\n{\n  \"message\": \"Deleted user Successfully\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"A user with that id doesn't exist\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./users/usersRouter.js",
+    "groupTitle": "Users",
+    "name": "DeleteUsers"
+  },
+  {
+    "type": "delete",
     "url": "/users/students/:studentId",
     "title": "Delete a student in the user's student list",
-    "group": "Students",
+    "group": "Users",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -649,14 +862,14 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "./users/usersRouter.js",
-    "groupTitle": "Students",
+    "groupTitle": "Users",
     "name": "DeleteUsersStudentsStudentid"
   },
   {
     "type": "get",
     "url": "/users",
     "title": "Get student list of current user",
-    "group": "Students",
+    "group": "Users",
     "success": {
       "fields": {
         "Success 200": [
@@ -688,14 +901,65 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "./users/usersRouter.js",
-    "groupTitle": "Students",
+    "groupTitle": "Users",
     "name": "GetUsers"
+  },
+  {
+    "type": "post",
+    "url": "/users/classes",
+    "title": "Add a class that the user is teaching",
+    "group": "Users",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "name",
+            "description": "<p>string</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": ""
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response: ",
+          "content": "HTTP 201 Created\n{\n  \"message\": \"Success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"Please enter all required fields to add the class.\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "./users/usersRouter.js",
+    "groupTitle": "Users",
+    "name": "PostUsersClasses"
   },
   {
     "type": "post",
     "url": "/users/students",
     "title": "Add a student to the user's student list",
-    "group": "Students",
+    "group": "Users",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -745,14 +1009,14 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "./users/usersRouter.js",
-    "groupTitle": "Students",
+    "groupTitle": "Users",
     "name": "PostUsersStudents"
   },
   {
     "type": "put",
     "url": "/users/students/:studentId",
     "title": "Edit a student in the user's student list",
-    "group": "Students",
+    "group": "Users",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -808,58 +1072,7 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "./users/usersRouter.js",
-    "groupTitle": "Students",
-    "name": "PutUsersStudentsStudentid"
-  },
-  {
-    "type": "delete",
-    "url": "/users",
-    "title": "Deletes the user",
-    "group": "Users",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "optional": false,
-            "field": "userId",
-            "description": "<p>integer taken from url</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": ""
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Success-Response: ",
-          "content": "HTTP 200 OK\n{\n  \"message\": \"Deleted user Successfully\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP 406 Not Acceptable\n{\n  \"message\": \"A user with that id doesn't exist\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "./users/usersRouter.js",
     "groupTitle": "Users",
-    "name": "DeleteUsers"
+    "name": "PutUsersStudentsStudentid"
   }
 ] });

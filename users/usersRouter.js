@@ -8,7 +8,7 @@ const db = require("../data/dbConfig");
 
 /**
  * @api {get} /users Get student list of current user
- * @apiGroup Students
+ * @apiGroup Users
  * @apiSuccess {Array} data Student objects
  * 
  * @apiSuccessExample Success-Response: 
@@ -67,7 +67,7 @@ router.get("/", async (req, res) => {
 
 /**
  * @api {post} /users/classes Add a class that the user is teaching
- * @apiGroup Classes
+ * @apiGroup Users
  * @apiParam name string
  * @apiSuccess {String} message 
  * 
@@ -94,7 +94,6 @@ router.post("/classes", async (req, res) => {
         classId = id;
         return classId;
       });
-      console.log(classId[0]);
 
       let userNum = "";
       await Users.getUserByUsername(req.jwt.username).then((user) => {
@@ -123,7 +122,7 @@ router.post("/classes", async (req, res) => {
 
 /**
  * @api {post} /users/students Add a student to the user's student list
- * @apiGroup Students
+ * @apiGroup Users
  * @apiParam name string
  * @apiParam class_id integer
  * @apiSuccess {String} message
@@ -175,7 +174,7 @@ router.post("/students", async (req, res) => {
 
 /**
  * @api {put} /users/students/:studentId Edit a student in the user's student list
- * @apiGroup Students
+ * @apiGroup Users
  * @apiParam name string
  * @apiParam class_id integer Class id of new class
  * @apiParam prevClassId integer Class id of current class - used when changing students to a different class in conjunction with class_id
@@ -253,7 +252,7 @@ router.delete("/", async (req, res) => {
 
 /**
  * @api {delete} /users/students/:studentId Delete a student in the user's student list
- * @apiGroup Students
+ * @apiGroup Users
  * @apiParam studentId integer taken from url
  * @apiSuccess {String} message
  * 
