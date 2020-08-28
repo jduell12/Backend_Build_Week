@@ -197,7 +197,7 @@ router.put("/:id", (req, res) => {
  * @apiSuccessExample Success-Response: 
     HTTP 200 ok
     {
-      "message": "Success"P
+      "message": "Success"
     }
 
     @apiErrorExample Error-Response:
